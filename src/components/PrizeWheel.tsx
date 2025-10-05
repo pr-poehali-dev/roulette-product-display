@@ -18,21 +18,30 @@ interface PrizeWheelProps {
 
 export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: PrizeWheelProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const animationRef = useRef<NodeJS.Timeout>();
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isSpinning) {
       const animateToNext = () => {
-        setCurrentIndex((prev) => {
-          const next = prev + 1;
-          return next >= prizes.length ? 0 : next;
-        });
+        setIsTransitioning(true);
         
-        animationRef.current = setTimeout(animateToNext, 2000);
+        setTimeout(() => {
+          setCurrentIndex((prev) => {
+            const next = prev + 1;
+            return next >= prizes.length ? 0 : next;
+          });
+        }, 50);
+        
+        setTimeout(() => {
+          setIsTransitioning(false);
+        }, 1000);
+        
+        animationRef.current = setTimeout(animateToNext, 2800);
       };
       
-      animationRef.current = setTimeout(animateToNext, 2000);
+      animationRef.current = setTimeout(animateToNext, 2800);
       
       return () => {
         if (animationRef.current) {
@@ -71,7 +80,7 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
   return (
     <div ref={containerRef} className={styles.wheelContainer}>
       <div 
-        className={`${styles.wheelTrack} ${isSpinning ? styles.spinning : styles.idle}`}
+        className={`${styles.wheelTrack} ${isSpinning ? styles.spinning : styles.idle} ${isTransitioning ? styles.transitioning : ''}`}
       >
         {visiblePrizes.map(({ prize, offset }, idx) => {
           const cardClass = getCardClass(offset);
