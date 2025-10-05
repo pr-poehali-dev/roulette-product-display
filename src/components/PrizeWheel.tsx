@@ -36,13 +36,20 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const calculateCenterOffset = (cardIndex: number) => {
+  const getCardSpacing = () => {
     if (isMobile) {
-      const spacing = 216;
+      return 216;
+    }
+    return CARD_WITH_GAP;
+  };
+
+  const calculateCenterOffset = (cardIndex: number) => {
+    const spacing = getCardSpacing();
+    if (isMobile) {
       const cardSize = 200;
       return (cardIndex * spacing) + (cardSize / 2);
     }
-    return (cardIndex * CARD_WITH_GAP) + (CARD_WIDTH / 2);
+    return (cardIndex * spacing) + (CARD_WIDTH / 2);
   };
 
   useEffect(() => {
@@ -94,7 +101,8 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
       >
         {Array(TOTAL_CARDS).fill(null).map((_, idx) => {
           const prize = prizes[idx % prizes.length];
-          const cardPosition = idx * CARD_WITH_GAP;
+          const spacing = getCardSpacing();
+          const cardPosition = idx * spacing;
           const cardClass = getCardClass(cardPosition);
           const isCentered = Math.abs(offset - cardPosition) < 10;
           
