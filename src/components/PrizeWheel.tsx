@@ -87,15 +87,14 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete, targetP
       
       animationRef.current = requestAnimationFrame(animate);
     } else if (!showWinner) {
-      let lastTime = Date.now();
       const spacing = isMobile ? MOBILE_CARD_WITH_GAP : CARD_WITH_GAP;
+      const startTime = Date.now();
+      const idleSpeed = spacing / 2000;
       
       const idleAnimation = () => {
-        const now = Date.now();
-        if (now - lastTime >= 2000) {
-          setOffset(prev => prev + spacing);
-          lastTime = now;
-        }
+        const elapsed = Date.now() - startTime;
+        const newOffset = elapsed * idleSpeed;
+        setOffset(newOffset);
         animationRef.current = requestAnimationFrame(idleAnimation);
       };
       
