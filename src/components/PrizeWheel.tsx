@@ -16,30 +16,23 @@ interface PrizeWheelProps {
   onSpinComplete: (prize: Prize) => void;
 }
 
-const CARD_WIDTH = 260;
-const TOTAL_CARDS = 200;
-
 export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: PrizeWheelProps) {
-  const [offset, setOffset] = useState(CARD_WIDTH * Math.floor(TOTAL_CARDS / 2));
+  const [currentIndex, setCurrentIndex] = useState(0);
   const animationRef = useRef<NodeJS.Timeout>();
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isSpinning) {
-      let currentIndex = Math.floor(TOTAL_CARDS / 2);
-      
       const animateToNext = () => {
-        setOffset(CARD_WIDTH * currentIndex);
+        setCurrentIndex((prev) => {
+          const next = prev + 1;
+          return next >= prizes.length ? 0 : next;
+        });
         
-        animationRef.current = setTimeout(() => {
-          currentIndex++;
-          if (currentIndex >= TOTAL_CARDS - 10) {
-            currentIndex = Math.floor(TOTAL_CARDS / 2);
-          }
-          animateToNext();
-        }, 2000);
+        animationRef.current = setTimeout(animateToNext, 2000);
       };
       
-      animateToNext();
+      animationRef.current = setTimeout(animateToNext, 2000);
       
       return () => {
         if (animationRef.current) {
@@ -47,34 +40,40 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
         }
       };
     }
-  }, [isSpinning]);
+  }, [isSpinning, prizes.length]);
 
-  const getCardClass = (cardPosition: number) => {
-    const distance = Math.abs(offset - cardPosition);
-    
-    if (distance < 10) return styles.center;
-    if (distance < CARD_WIDTH + 10) return styles.near;
-    if (distance < CARD_WIDTH * 2 + 10) return styles.far;
+  const getVisiblePrizes = () => {
+    const visible = [];
+    for (let i = -2; i <= 2; i++) {
+      let index = currentIndex + i;
+      if (index < 0) index = prizes.length + index;
+      if (index >= prizes.length) index = index - prizes.length;
+      visible.push({ prize: prizes[index], offset: i });
+    }
+    return visible;
+  };
+
+  const getCardClass = (offset: number) => {
+    if (offset === 0) return styles.center;
+    if (Math.abs(offset) === 1) return styles.near;
+    if (Math.abs(offset) === 2) return styles.far;
     return styles.hidden;
   };
 
+  const visiblePrizes = getVisiblePrizes();
+
   return (
-    <div className={styles.wheelContainer}>
+    <div ref={containerRef} className={styles.wheelContainer}>
       <div 
         className={`${styles.wheelTrack} ${isSpinning ? styles.spinning : styles.idle}`}
-        style={{
-          transform: `translateX(calc(50% - ${offset}px))`
-        }}
       >
-        {Array(TOTAL_CARDS).fill(null).map((_, idx) => {
-          const prize = prizes[idx % prizes.length];
-          const cardPosition = idx * CARD_WIDTH;
-          const cardClass = getCardClass(cardPosition);
-          const isCentered = Math.abs(offset - cardPosition) < 10;
+        {visiblePrizes.map(({ prize, offset }, idx) => {
+          const cardClass = getCardClass(offset);
+          const isCentered = offset === 0;
           
           return (
             <div
-              key={`prize-${idx}`}
+              key={`prize-${idx}-${prize.id}`}
               className={`${styles.prizeCard} ${cardClass}`}
               style={{ backgroundColor: prize.color }}
             >
