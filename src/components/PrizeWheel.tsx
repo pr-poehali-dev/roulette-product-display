@@ -27,11 +27,11 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
   const animationRef = useRef<NodeJS.Timeout>();
 
   const calculateCenterOffset = (cardIndex: number) => {
-    return cardIndex * CARD_WITH_GAP;
+    return (cardIndex * CARD_WITH_GAP) + (CARD_WIDTH / 2);
   };
 
   useEffect(() => {
-    if (!isSpinning && containerRef.current) {
+    if (!isSpinning) {
       let currentIndex = 3;
       setOffset(calculateCenterOffset(currentIndex));
       
@@ -72,7 +72,7 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
       <div 
         className={`${styles.wheelTrack} ${isSpinning ? styles.spinning : styles.idle}`}
         style={{
-          transform: `translateX(-${offset}px)`
+          transform: `translateX(calc(-${offset}px))`
         }}
       >
         {Array(TOTAL_CARDS).fill(null).map((_, idx) => {

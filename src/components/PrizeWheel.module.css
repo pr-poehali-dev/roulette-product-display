@@ -34,8 +34,8 @@
   align-items: center;
   gap: 24px;
   will-change: transform;
-  position: relative;
-  left: calc(50% - 120px);
+  position: absolute;
+  left: 50%;
 }
 
 .wheelTrack.spinning {
