@@ -20,12 +20,12 @@ const CARD_WIDTH = 260;
 const TOTAL_CARDS = 200;
 
 export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: PrizeWheelProps) {
-  const [offset, setOffset] = useState(CARD_WIDTH * 3);
+  const [offset, setOffset] = useState(CARD_WIDTH * Math.floor(TOTAL_CARDS / 2));
   const animationRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     if (!isSpinning) {
-      let currentIndex = 3;
+      let currentIndex = Math.floor(TOTAL_CARDS / 2);
       
       const animateToNext = () => {
         setOffset(CARD_WIDTH * currentIndex);
@@ -33,7 +33,7 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
         animationRef.current = setTimeout(() => {
           currentIndex++;
           if (currentIndex >= TOTAL_CARDS - 10) {
-            currentIndex = 3;
+            currentIndex = Math.floor(TOTAL_CARDS / 2);
           }
           animateToNext();
         }, 2000);
