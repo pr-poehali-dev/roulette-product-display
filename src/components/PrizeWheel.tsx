@@ -23,13 +23,14 @@ const CARD_WITH_GAP = CARD_WIDTH + GAP;
 const MOBILE_CARD_SIZE = 200;
 const MOBILE_GAP = 20;
 const MOBILE_CARD_WITH_GAP = MOBILE_CARD_SIZE + MOBILE_GAP;
-const TOTAL_CARDS = 200;
+const VISIBLE_CARDS = 5;
 
 export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: PrizeWheelProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const animationRef = useRef<NodeJS.Timeout>();
+  const [renderOffset, setRenderOffset] = useState(0);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 768);
@@ -42,17 +43,23 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
     return isMobile ? MOBILE_CARD_WITH_GAP : CARD_WITH_GAP;
   };
 
-  const calculateCenterOffset = (cardIndex: number) => {
+  const calculateCenterOffset = () => {
     const spacing = getCardSpacing();
     const halfCard = isMobile ? MOBILE_CARD_SIZE / 2 : CARD_WIDTH / 2;
-    const loopIndex = cardIndex % prizes.length;
-    return (loopIndex * spacing) + halfCard;
+    return (Math.floor(VISIBLE_CARDS / 2) * spacing) + halfCard;
   };
 
   useEffect(() => {
     if (!isSpinning) {
       const animateToNext = () => {
-        setCurrentIndex(prev => prev + 1);
+        setCurrentIndex(prev => {
+          const next = prev + 1;
+          if (next >= prizes.length) {
+            setRenderOffset(offset => offset + prizes.length);
+            return 0;
+          }
+          return next;
+        });
         
         animationRef.current = setTimeout(() => {
           animateToNext();
@@ -69,16 +76,28 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
         }
       };
     }
-  }, [isSpinning, isMobile]);
+  }, [isSpinning, isMobile, prizes.length]);
 
-  const getCardClass = (cardIndex: number) => {
-    const spacing = getCardSpacing();
-    const centerIndex = currentIndex % prizes.length;
-    const cardLoopIndex = cardIndex % prizes.length;
+  const getVisibleCards = () => {
+    const cards = [];
+    const startIdx = currentIndex - Math.floor(VISIBLE_CARDS / 2);
     
-    let distance = Math.abs(centerIndex - cardLoopIndex);
-    const loopDistance = prizes.length - distance;
-    distance = Math.min(distance, loopDistance);
+    for (let i = 0; i < VISIBLE_CARDS + 2; i++) {
+      const idx = startIdx + i;
+      const prizeIdx = ((idx % prizes.length) + prizes.length) % prizes.length;
+      cards.push({
+        prize: prizes[prizeIdx],
+        position: i,
+        absoluteIndex: idx
+      });
+    }
+    
+    return cards;
+  };
+
+  const getCardClass = (position: number) => {
+    const centerPos = Math.floor(VISIBLE_CARDS / 2);
+    const distance = Math.abs(position - centerPos);
     
     if (distance === 0) return styles.center;
     if (distance === 1) return styles.near;
@@ -93,24 +112,18 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
         className={`${styles.wheelTrack} ${isSpinning ? styles.spinning : styles.idle}`}
         style={{
           transform: isMobile 
-            ? `translateY(calc(-${calculateCenterOffset(currentIndex)}px))` 
-            : `translateX(calc(-${calculateCenterOffset(currentIndex)}px))`
+            ? `translateY(calc(-${calculateCenterOffset()}px))` 
+            : `translateX(calc(-${calculateCenterOffset()}px))`
         }}
       >
-        {Array(prizes.length * 3).fill(null).map((_, idx) => {
-          const prize = prizes[idx % prizes.length];
-          const cardClass = getCardClass(idx);
-          
-          const centerIndex = currentIndex % prizes.length;
-          const cardLoopIndex = idx % prizes.length;
-          let distance = Math.abs(centerIndex - cardLoopIndex);
-          const loopDistance = prizes.length - distance;
-          distance = Math.min(distance, loopDistance);
-          const isCentered = distance === 0;
+        {getVisibleCards().map(({ prize, position, absoluteIndex }) => {
+          const cardClass = getCardClass(position);
+          const centerPos = Math.floor(VISIBLE_CARDS / 2);
+          const isCentered = position === centerPos;
           
           return (
             <div
-              key={`prize-${idx}`}
+              key={`prize-${absoluteIndex}`}
               className={`${styles.prizeCard} ${cardClass}`}
               style={{ backgroundColor: prize.color }}
             >
