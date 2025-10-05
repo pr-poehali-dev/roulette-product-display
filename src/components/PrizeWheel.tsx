@@ -53,12 +53,12 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
         
         animationRef.current = setTimeout(() => {
           animateToNext();
-        }, 1300);
+        }, 1950);
       };
       
       animationRef.current = setTimeout(() => {
         animateToNext();
-      }, 1300);
+      }, 1950);
       
       return () => {
         if (animationRef.current) {
