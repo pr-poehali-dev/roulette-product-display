@@ -52,7 +52,7 @@ export default function Index() {
             <span className="text-base">🪙</span>
           </div>
 
-          <div className="flex flex-col gap-2 md:flex-row md:gap-4 max-md:absolute max-md:top-2 max-md:right-2 max-md:mt-10 z-50">
+          <div className="flex flex-col gap-2 md:flex-row md:gap-4 max-md:absolute max-md:top-2 max-md:right-2 max-md:mt-12 z-50">
             <button className="flex flex-col items-center gap-0.5 hover:scale-105 transition-transform">
               <div className="w-14 h-14 md:w-14 md:h-14 max-md:w-10 max-md:h-10 bg-white/95 backdrop-blur-sm rounded-xl shadow-lg flex items-center justify-center text-3xl max-md:text-xl">
                 🎁
@@ -76,11 +76,13 @@ export default function Index() {
           </div>
         </div>
 
-        <PrizeWheel 
-          prizes={prizes}
-          isSpinning={isSpinning}
-          onSpinComplete={(prize) => setWonPrize(prize)}
-        />
+        <div className="max-md:flex-1 max-md:flex max-md:items-center">
+          <PrizeWheel 
+            prizes={prizes}
+            isSpinning={isSpinning}
+            onSpinComplete={(prize) => setWonPrize(prize)}
+          />
+        </div>
 
         {wonPrize && (
           <div className="mb-6 animate-bounce-in">
@@ -98,7 +100,7 @@ export default function Index() {
           </div>
         )}
 
-        <div className="max-w-2xl mx-auto px-6 max-md:mt-auto max-md:pb-4">
+        <div className="max-w-2xl mx-auto px-6 max-md:pb-4">
           <Button
             onClick={spinWheel}
             disabled={coins < 10 || isSpinning}

@@ -9,8 +9,8 @@
 
 @media (max-width: 768px) {
   .wheelContainer {
-    height: calc(100vh - 180px);
-    min-height: 400px;
+    height: 100%;
+    width: 100%;
   }
 }
 
