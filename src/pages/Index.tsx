@@ -33,45 +33,45 @@ export default function Index() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-400 via-orange-500 to-yellow-400 relative overflow-hidden">
+    <div className="min-h-screen md:min-h-screen max-md:h-screen max-md:overflow-hidden bg-gradient-to-br from-orange-400 via-orange-500 to-yellow-400 relative">
       <div className="absolute inset-0 opacity-20">
         <div className="absolute top-10 left-10 w-32 h-32 bg-red-500 rounded-full blur-3xl" />
         <div className="absolute top-40 right-20 w-48 h-48 bg-yellow-400 rounded-full blur-3xl" />
         <div className="absolute bottom-20 left-1/3 w-40 h-40 bg-orange-600 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative z-10 py-6 max-w-full">
-        <div className="flex items-center justify-between mb-8 px-6 md:relative md:mb-8">
+      <div className="relative z-10 md:py-6 max-md:py-0 max-w-full max-md:h-full max-md:flex max-md:flex-col">
+        <div className="flex items-center justify-between md:mb-8 max-md:mb-0 px-6 md:relative">
           <div className="flex items-center gap-3 bg-white/95 backdrop-blur-sm px-6 py-3 rounded-2xl shadow-lg md:flex max-md:hidden">
             <span className="text-3xl font-black text-gray-800">{coins}</span>
             <span className="text-2xl">🪙</span>
           </div>
 
-          <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg md:hidden flex items-center gap-2">
-            <span className="text-xl font-black text-gray-800">{coins}</span>
-            <span className="text-lg">🪙</span>
+          <div className="absolute top-2 right-2 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg md:hidden flex items-center gap-1.5 z-50">
+            <span className="text-lg font-black text-gray-800">{coins}</span>
+            <span className="text-base">🪙</span>
           </div>
 
-          <div className="flex flex-col gap-3 md:flex-row md:gap-4 max-md:absolute max-md:top-4 max-md:right-4 max-md:mt-14">
-            <button className="flex flex-col items-center gap-1 hover:scale-105 transition-transform">
-              <div className="w-14 h-14 md:w-14 md:h-14 max-md:w-12 max-md:h-12 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg flex items-center justify-center text-3xl max-md:text-2xl">
+          <div className="flex flex-col gap-2 md:flex-row md:gap-4 max-md:absolute max-md:top-2 max-md:right-2 max-md:mt-10 z-50">
+            <button className="flex flex-col items-center gap-0.5 hover:scale-105 transition-transform">
+              <div className="w-14 h-14 md:w-14 md:h-14 max-md:w-10 max-md:h-10 bg-white/95 backdrop-blur-sm rounded-xl shadow-lg flex items-center justify-center text-3xl max-md:text-xl">
                 🎁
               </div>
-              <span className="text-white text-xs md:text-sm font-semibold drop-shadow-lg">Призы</span>
+              <span className="text-white text-[10px] md:text-sm font-semibold drop-shadow-lg">Призы</span>
             </button>
 
-            <button className="flex flex-col items-center gap-1 hover:scale-105 transition-transform">
-              <div className="w-14 h-14 md:w-14 md:h-14 max-md:w-12 max-md:h-12 bg-white/95 backdrop-blur-sm rounded-2xl shadow-lg flex items-center justify-center text-3xl max-md:text-2xl">
+            <button className="flex flex-col items-center gap-0.5 hover:scale-105 transition-transform">
+              <div className="w-14 h-14 md:w-14 md:h-14 max-md:w-10 max-md:h-10 bg-white/95 backdrop-blur-sm rounded-xl shadow-lg flex items-center justify-center text-3xl max-md:text-xl">
                 🎯
               </div>
-              <span className="text-white text-xs md:text-sm font-semibold drop-shadow-lg max-md:whitespace-nowrap">Задания<br className="md:block hidden"/>и игры</span>
+              <span className="text-white text-[10px] md:text-sm font-semibold drop-shadow-lg text-center leading-tight">Задания<br className="md:block"/>и игры</span>
             </button>
 
-            <button className="flex flex-col items-center gap-1 hover:scale-105 transition-transform">
-              <div className="w-14 h-14 md:w-14 md:h-14 max-md:w-12 max-md:h-12 bg-gradient-to-br from-gray-700 to-gray-900 rounded-2xl shadow-lg flex items-center justify-center text-white text-xs font-black px-2 text-center leading-tight">
+            <button className="flex flex-col items-center gap-0.5 hover:scale-105 transition-transform">
+              <div className="w-14 h-14 md:w-14 md:h-14 max-md:w-10 max-md:h-10 bg-gradient-to-br from-gray-700 to-gray-900 rounded-xl shadow-lg flex items-center justify-center text-white max-md:text-[8px] text-xs font-black px-1 text-center leading-tight">
                 ЗАБИРАЙТЕ
               </div>
-              <span className="text-white text-xs md:text-sm font-semibold drop-shadow-lg max-md:whitespace-nowrap">Монетки<br className="md:block hidden"/>за вход</span>
+              <span className="text-white text-[10px] md:text-sm font-semibold drop-shadow-lg text-center leading-tight">Монетки<br className="md:block"/>за вход</span>
             </button>
           </div>
         </div>
@@ -98,11 +98,11 @@ export default function Index() {
           </div>
         )}
 
-        <div className="max-w-2xl mx-auto px-6">
+        <div className="max-w-2xl mx-auto px-6 max-md:mt-auto max-md:pb-4">
           <Button
             onClick={spinWheel}
             disabled={coins < 10 || isSpinning}
-            className="w-full bg-white hover:bg-gray-50 text-gray-900 py-8 rounded-2xl shadow-2xl text-2xl font-black disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-[1.02]"
+            className="w-full bg-white hover:bg-gray-50 text-gray-900 md:py-8 max-md:py-6 rounded-2xl shadow-2xl md:text-2xl max-md:text-xl font-black disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-[1.02]"
           >
             <span className="flex items-center justify-center gap-3">
               {isSpinning ? (
