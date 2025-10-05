@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import styles from './PrizeWheel.module.css';
 
 interface Prize {
@@ -68,38 +69,64 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
     return '';
   };
 
+  const getScale = (offset: number) => {
+    if (offset === 0) return 1.2;
+    if (Math.abs(offset) === 1) return 0.9;
+    if (Math.abs(offset) === 2) return 0.75;
+    return 0.6;
+  };
+
+  const getOpacity = (offset: number) => {
+    if (offset === 0) return 1;
+    if (Math.abs(offset) === 1) return 0.8;
+    if (Math.abs(offset) === 2) return 0.6;
+    return 0.3;
+  };
+
   return (
     <div ref={containerRef} className={styles.wheelContainer}>
-      <div 
-        className={`${styles.wheelTrack} ${isSpinning ? styles.spinning : styles.idle}`}
-      >
-        {visiblePrizes.map(({ prize, offset }) => {
-          const cardClass = getCardClass(offset);
-          const marginClass = getMarginClass(offset);
-          const isCentered = offset === 0;
-          
-          return (
-            <div
-              key={`${offset}`}
-              className={`${styles.prizeCard} ${cardClass} ${marginClass}`}
-              style={{ backgroundColor: prize.color }}
-            >
-              {prize.emoji && (
-                <div className={`${styles.prizeEmoji} ${!isSpinning && isCentered ? styles.floating : ''}`}>
-                  {prize.emoji}
+      <div className={styles.wheelTrack}>
+        <AnimatePresence mode="popLayout">
+          {visiblePrizes.map(({ prize, offset }) => {
+            const marginClass = getMarginClass(offset);
+            const isCentered = offset === 0;
+            
+            return (
+              <motion.div
+                key={`${offset}`}
+                layout
+                initial={{ scale: getScale(offset), opacity: getOpacity(offset) }}
+                animate={{ 
+                  scale: getScale(offset), 
+                  opacity: getOpacity(offset)
+                }}
+                transition={{ 
+                  duration: 1,
+                  ease: [0.34, 1.56, 0.64, 1]
+                }}
+                className={`${styles.prizeCard} ${marginClass}`}
+                style={{ 
+                  backgroundColor: prize.color,
+                  zIndex: offset === 0 ? 3 : Math.abs(offset) === 1 ? 2 : 1
+                }}
+              >
+                {prize.emoji && (
+                  <div className={`${styles.prizeEmoji} ${!isSpinning && isCentered ? styles.floating : ''}`}>
+                    {prize.emoji}
+                  </div>
+                )}
+                <div className={styles.prizeText}>
+                  {prize.text}
                 </div>
-              )}
-              <div className={styles.prizeText}>
-                {prize.text}
-              </div>
-              {prize.description && (
-                <div className={styles.prizeDescription}>
-                  {prize.description}
-                </div>
-              )}
-            </div>
-          );
-        })}
+                {prize.description && (
+                  <div className={styles.prizeDescription}>
+                    {prize.description}
+                  </div>
+                )}
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
       </div>
     </div>
   );
