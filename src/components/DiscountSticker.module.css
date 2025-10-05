@@ -1,64 +1,22 @@
-.sticker {
+.stickerWrapper {
   position: absolute;
   top: -12px;
   right: 8px;
   width: 110px;
   height: 52px;
-  border-radius: 26px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transform: rotate(-6deg) perspective(400px) rotateY(-12deg);
-  transform-origin: center center;
-  box-shadow:
-    0 6px 20px rgba(0, 0, 0, 0.35),
-    0 3px 10px rgba(0, 0, 0, 0.25);
+  transform: rotate(-6deg);
   z-index: 10;
 }
 
-.sticker::before {
-  content: "";
+.stickerImage {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.4) 0%,
-    rgba(255, 255, 255, 0) 60%
-  );
-  border-radius: 26px;
-  pointer-events: none;
-}
-
-.sticker::after {
-  content: "";
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  background: inherit;
-  top: 50%;
-  left: -8px;
-  transform: translateY(-50%);
-  border-radius: 50%;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
-}
-
-.purple {
-  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
-}
-
-.orange {
-  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-}
-
-.blue {
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-}
-
-.green {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.35));
 }
 
 .content {
@@ -86,7 +44,7 @@
 }
 
 @media (max-width: 768px) {
-  .sticker {
+  .stickerWrapper {
     width: 100px;
     height: 48px;
     top: -10px;
