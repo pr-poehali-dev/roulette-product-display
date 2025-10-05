@@ -9,6 +9,10 @@ interface Prize {
   emoji?: string;
   image?: string;
   description: string;
+  discount?: {
+    type: 'percent' | 'ruble';
+    value: number;
+  };
 }
 
 interface PrizeWheelProps {
@@ -98,6 +102,13 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
               alt={prize.text}
               className={styles.prizeImage}
             />
+          )}
+          {prize.discount && (
+            <div className={styles.discountBadge}>
+              <span className={styles.discountValue}>
+                {prize.discount.type === 'percent' ? `-${prize.discount.value}%` : `-${prize.discount.value}₽`}
+              </span>
+            </div>
           )}
         </div>
       );
