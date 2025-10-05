@@ -66,7 +66,7 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
       <div 
         className={`${styles.wheelTrack} ${isSpinning ? styles.spinning : styles.idle}`}
         style={{
-          transform: `translateX(calc(50% - ${offset}px - ${CARD_WIDTH / 2}px))`
+          transform: `translateX(-${offset}px)`
         }}
       >
         {Array(TOTAL_CARDS).fill(null).map((_, idx) => {
