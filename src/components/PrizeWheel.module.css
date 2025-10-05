@@ -125,24 +125,25 @@
 
 .discountBadge {
   position: absolute;
-  top: -12px;
+  top: -16px;
   left: 50%;
-  transform: translateX(-50%) skewX(-8deg);
-  background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
-  padding: 8px 32px;
-  border-radius: 8px;
-  box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: translateX(-50%);
+  width: 160px;
+  height: 70px;
+  background-image: url("https://cdn.poehali.dev/files/ad06d42b-8008-4a1c-9637-aa9ee9e1196f.png");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   z-index: 10;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 }
 
 .discountValue {
-  display: block;
-  transform: skewX(8deg);
   color: white;
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 900;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
   letter-spacing: -1px;
 }
