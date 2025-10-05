@@ -55,19 +55,22 @@ export default function Index() {
   const [coins, setCoins] = useState(100);
   const [isSpinning, setIsSpinning] = useState(false);
   const [wonPrize, setWonPrize] = useState<typeof prizes[0] | null>(null);
+  const [targetPrizeId, setTargetPrizeId] = useState<number | undefined>(undefined);
 
   const spinWheel = () => {
     if (coins < 10 || isSpinning) return;
 
+    const randomPrize = prizes[Math.floor(Math.random() * prizes.length)];
+    
     setCoins(coins - 10);
     setIsSpinning(true);
     setWonPrize(null);
+    setTargetPrizeId(randomPrize.id);
+  };
 
-    setTimeout(() => {
-      const randomPrize = prizes[Math.floor(Math.random() * prizes.length)];
-      setIsSpinning(false);
-      setWonPrize(randomPrize);
-    }, 5000);
+  const handleSpinComplete = (prize: typeof prizes[0]) => {
+    setIsSpinning(false);
+    setWonPrize(prize);
   };
 
   return (
@@ -95,7 +98,8 @@ export default function Index() {
           <PrizeWheel 
             prizes={prizes}
             isSpinning={isSpinning}
-            onSpinComplete={(prize) => setWonPrize(prize)}
+            onSpinComplete={handleSpinComplete}
+            targetPrizeId={targetPrizeId}
           />
         </div>
 

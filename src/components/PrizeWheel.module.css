@@ -116,6 +116,35 @@
   z-index: 0;
 }
 
+.prizeCard.winner {
+  width: 200px;
+  height: 220px;
+  opacity: 1 !important;
+  z-index: 100;
+  animation: winnerPulse 1s ease-in-out infinite;
+  box-shadow:
+    0 0 0 8px rgba(255, 255, 255, 0.3),
+    0 0 40px rgba(255, 255, 255, 0.4),
+    0 16px 48px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+  .prizeCard.winner {
+    width: 180px;
+    height: 200px;
+  }
+}
+
+@keyframes winnerPulse {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+}
+
 .prizeImage {
   width: 75%;
   height: 75%;
