@@ -22,31 +22,27 @@ export default function Index() {
 
   useEffect(() => {
     if (!isSpinning) {
-      const startAutoScroll = () => {
-        autoScrollRef.current = window.setInterval(() => {
-          setOffset(prev => prev - 1);
-        }, 20);
+      let currentIndex = 3;
+      const prizeWidth = 350;
+      
+      const animateToNext = () => {
+        const targetOffset = -(prizeWidth * currentIndex);
+        setOffset(targetOffset);
+        
+        setTimeout(() => {
+          currentIndex = (currentIndex + 1) % prizes.length;
+          if (currentIndex === 0) currentIndex = prizes.length;
+          animateToNext();
+        }, 2000);
       };
       
-      startAutoScroll();
+      const timeoutId = setTimeout(animateToNext, 100);
       
       return () => {
-        if (autoScrollRef.current) {
-          clearInterval(autoScrollRef.current);
-        }
+        clearTimeout(timeoutId);
       };
-    } else {
-      if (autoScrollRef.current) {
-        clearInterval(autoScrollRef.current);
-      }
     }
   }, [isSpinning]);
-
-  useEffect(() => {
-    if (offset < -(350 * prizes.length * 10)) {
-      setOffset(-350 * 3);
-    }
-  }, [offset]);
 
   const spinWheel = () => {
     if (coins < 10 || isSpinning) return;
@@ -58,9 +54,8 @@ export default function Index() {
     const randomPrize = prizes[Math.floor(Math.random() * prizes.length)];
     const prizeIndex = prizes.indexOf(randomPrize);
     const prizeWidth = 350;
-    const fullSpins = 30;
-    const currentCycle = Math.floor(Math.abs(offset) / (prizeWidth * prizes.length));
-    const targetOffset = -(prizeWidth * prizeIndex) - (prizeWidth * prizes.length * (currentCycle + fullSpins));
+    const fullSpins = 35;
+    const targetOffset = (prizeWidth * prizeIndex) + (prizeWidth * prizes.length * fullSpins);
     
     setOffset(targetOffset);
 
@@ -110,47 +105,53 @@ export default function Index() {
         </div>
 
         <div className="relative mb-8 h-[400px] flex items-center justify-center overflow-hidden">
-          <div className="absolute inset-0 pointer-events-none z-10">
-            <div className="absolute left-1/2 top-0 bottom-0 w-1 bg-white/80 shadow-2xl transform -translate-x-1/2" />
-          </div>
-
           <div 
             className="flex gap-6 items-center"
             style={{
-              transform: `translateX(calc(50% + ${offset}px))`,
+              transform: `translateX(calc(50% - ${offset}px))`,
               transition: isSpinning 
                 ? 'transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)' 
-                : 'none'
+                : 'transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)'
             }}
           >
-            {Array(50).fill(prizes).flat().map((prize, idx) => (
-              <div
-                key={`${prize.id}-${idx}`}
-                className="flex-shrink-0 w-[320px] h-[280px] rounded-3xl shadow-2xl p-8 flex flex-col items-center justify-center relative overflow-hidden group hover:scale-105 transition-transform"
-                style={{ 
-                  backgroundColor: prize.color
-                }}
-              >
-                {prize.emoji && (
-                  <div className="text-8xl mb-4" style={{
-                    animation: isSpinning ? 'none' : 'float 3s ease-in-out infinite',
-                    animationDelay: `${idx * 0.1}s`
-                  }}>
-                    {prize.emoji}
-                  </div>
-                )}
-                <div className="text-white text-5xl font-black mb-3 drop-shadow-lg text-center">
-                  {prize.text}
-                </div>
-                {prize.description && (
-                  <div className="absolute bottom-6 left-6 right-6">
-                    <div className="bg-white/20 backdrop-blur-sm text-white text-sm font-bold px-4 py-2 rounded-xl text-center">
-                      {prize.description}
+            {Array(50).fill(prizes).flat().map((prize, idx) => {
+              const position = Math.abs(offset - (idx * 350));
+              const distanceFromCenter = Math.abs(position % (350 * prizes.length));
+              const isCentered = distanceFromCenter < 175;
+              const scale = isCentered ? 1.1 : 0.85;
+              const opacity = isCentered ? 1 : 0.6;
+              
+              return (
+                <div
+                  key={`${prize.id}-${idx}`}
+                  className="flex-shrink-0 w-[320px] h-[280px] rounded-3xl shadow-2xl p-8 flex flex-col items-center justify-center relative overflow-hidden"
+                  style={{ 
+                    backgroundColor: prize.color,
+                    transform: `scale(${scale})`,
+                    opacity: opacity,
+                    transition: 'transform 0.5s ease, opacity 0.5s ease'
+                  }}
+                >
+                  {prize.emoji && (
+                    <div className="text-8xl mb-4" style={{
+                      animation: !isSpinning && isCentered ? 'float 3s ease-in-out infinite' : 'none'
+                    }}>
+                      {prize.emoji}
                     </div>
+                  )}
+                  <div className="text-white text-5xl font-black mb-3 drop-shadow-lg text-center">
+                    {prize.text}
                   </div>
-                )}
-              </div>
-            ))}
+                  {prize.description && (
+                    <div className="absolute bottom-6 left-6 right-6">
+                      <div className="bg-white/20 backdrop-blur-sm text-white text-sm font-bold px-4 py-2 rounded-xl text-center">
+                        {prize.description}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
 
