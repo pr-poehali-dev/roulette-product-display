@@ -20,7 +20,9 @@ const CARD_WIDTH = 240;
 const CARD_HEIGHT = 280;
 const GAP = 24;
 const CARD_WITH_GAP = CARD_WIDTH + GAP;
-const CARD_WITH_GAP_VERTICAL = CARD_HEIGHT + 20;
+const MOBILE_CARD_SIZE = 200;
+const MOBILE_GAP = 20;
+const MOBILE_CARD_WITH_GAP = MOBILE_CARD_SIZE + MOBILE_GAP;
 const TOTAL_CARDS = 200;
 
 export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: PrizeWheelProps) {
@@ -37,19 +39,13 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
   }, []);
 
   const getCardSpacing = () => {
-    if (isMobile) {
-      return 216;
-    }
-    return CARD_WITH_GAP;
+    return isMobile ? MOBILE_CARD_WITH_GAP : CARD_WITH_GAP;
   };
 
   const calculateCenterOffset = (cardIndex: number) => {
     const spacing = getCardSpacing();
-    if (isMobile) {
-      const cardSize = 200;
-      return (cardIndex * spacing) + (cardSize / 2);
-    }
-    return (cardIndex * spacing) + (CARD_WIDTH / 2);
+    const halfCard = isMobile ? MOBILE_CARD_SIZE / 2 : CARD_WIDTH / 2;
+    return (cardIndex * spacing) + halfCard;
   };
 
   useEffect(() => {
@@ -58,18 +54,20 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
       setOffset(calculateCenterOffset(currentIndex));
       
       const animateToNext = () => {
+        currentIndex--;
+        if (currentIndex < 0) {
+          currentIndex = TOTAL_CARDS - 10;
+        }
         setOffset(calculateCenterOffset(currentIndex));
         
         animationRef.current = setTimeout(() => {
-          currentIndex++;
-          if (currentIndex >= TOTAL_CARDS - 10) {
-            currentIndex = 3;
-          }
           animateToNext();
         }, 1300);
       };
       
-      animateToNext();
+      animationRef.current = setTimeout(() => {
+        animateToNext();
+      }, 1300);
       
       return () => {
         if (animationRef.current) {
@@ -77,7 +75,7 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
         }
       };
     }
-  }, [isSpinning]);
+  }, [isSpinning, isMobile]);
 
   const getCardClass = (cardPosition: number) => {
     const distance = Math.abs(offset - cardPosition);
