@@ -108,9 +108,9 @@ export default function Index() {
           </div>
         </div>
 
-        <div className="relative mb-8 h-[400px] flex items-center justify-center overflow-hidden">
+        <div className="relative mb-8 h-[450px] flex items-center justify-center overflow-hidden">
           <div 
-            className="flex gap-6 items-center"
+            className="flex items-center"
             style={{
               transform: `translateX(calc(50% - ${offset}px))`,
               transition: isSpinning 
@@ -120,36 +120,53 @@ export default function Index() {
           >
             {Array(200).fill(null).map((_, idx) => {
               const prize = prizes[idx % prizes.length];
-              const cardPosition = idx * 350;
+              const CARD_WIDTH = 350;
+              const cardPosition = idx * CARD_WIDTH;
               const distanceFromCenter = Math.abs(offset - cardPosition);
-              const isCentered = distanceFromCenter < 50;
-              const scale = isCentered ? 1.15 : 0.85;
-              const opacity = isCentered ? 1 : 0.65;
+              
+              let scale = 1;
+              let opacity = 1;
+              
+              if (distanceFromCenter === 0) {
+                scale = 1.0;
+                opacity = 1;
+              } else if (distanceFromCenter === CARD_WIDTH) {
+                scale = 0.85;
+                opacity = 0.8;
+              } else if (distanceFromCenter === CARD_WIDTH * 2) {
+                scale = 0.7;
+                opacity = 0.6;
+              } else {
+                scale = 0.55;
+                opacity = 0.4;
+              }
               
               return (
                 <div
                   key={`prize-${idx}`}
-                  className="flex-shrink-0 w-[320px] h-[280px] rounded-3xl shadow-2xl p-8 flex flex-col items-center justify-center relative overflow-hidden"
+                  className="flex-shrink-0 rounded-3xl shadow-2xl p-6 flex flex-col items-center justify-center relative overflow-hidden mx-4"
                   style={{ 
                     backgroundColor: prize.color,
+                    width: '300px',
+                    height: '320px',
                     transform: `scale(${scale})`,
                     opacity: opacity,
                     transition: 'transform 0.5s ease, opacity 0.5s ease'
                   }}
                 >
                   {prize.emoji && (
-                    <div className="text-8xl mb-4" style={{
-                      animation: !isSpinning && isCentered ? 'float 3s ease-in-out infinite' : 'none'
+                    <div className="text-7xl mb-3" style={{
+                      animation: !isSpinning && distanceFromCenter === 0 ? 'float 3s ease-in-out infinite' : 'none'
                     }}>
                       {prize.emoji}
                     </div>
                   )}
-                  <div className="text-white text-5xl font-black mb-3 drop-shadow-lg text-center">
+                  <div className="text-white text-4xl font-black mb-2 drop-shadow-lg text-center">
                     {prize.text}
                   </div>
                   {prize.description && (
-                    <div className="absolute bottom-6 left-6 right-6">
-                      <div className="bg-white/20 backdrop-blur-sm text-white text-sm font-bold px-4 py-2 rounded-xl text-center">
+                    <div className="absolute bottom-4 left-4 right-4">
+                      <div className="bg-white/20 backdrop-blur-sm text-white text-xs font-bold px-3 py-2 rounded-xl text-center">
                         {prize.description}
                       </div>
                     </div>
