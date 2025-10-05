@@ -68,14 +68,14 @@
 
 .prizeCard {
   position: absolute;
-  width: 240px;
-  height: 280px;
-  border-radius: 32px;
+  width: 200px;
+  height: 220px;
+  border-radius: 28px;
   padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  overflow: visible;
   transition:
     transform 1.3s linear,
     opacity 0.3s ease;
@@ -91,7 +91,7 @@
 
 @media (max-width: 768px) {
   .prizeCard {
-    width: 200px;
+    width: 180px;
     height: 200px;
   }
 }
@@ -125,11 +125,11 @@
 
 .discountBadge {
   position: absolute;
-  top: 8px;
+  top: -8px;
   left: 50%;
   transform: translateX(-50%);
-  width: 180px;
-  height: 80px;
+  width: 165px;
+  height: 75px;
   background-size: cover;
   background-position: center;
   display: flex;
@@ -141,9 +141,9 @@
 
 .discountValue {
   color: white;
-  font-size: 36px;
+  font-size: 32px;
   font-weight: 900;
   text-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
   letter-spacing: -2px;
-  transform: rotate(-8deg) translateY(-2px);
+  transform: rotate(8deg) translateY(-4px);
 }
