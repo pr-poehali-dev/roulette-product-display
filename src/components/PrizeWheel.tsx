@@ -7,6 +7,7 @@ interface Prize {
   type: string;
   color: string;
   emoji?: string;
+  image?: string;
   description: string;
 }
 
@@ -86,24 +87,17 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
           key={`${cardIndex}-${prize.id}`}
           className={cardClass}
           style={{ 
-            backgroundColor: prize.color,
             transform: isMobile 
               ? `translate(-50%, calc(-50% + ${position * spacing}px))` 
               : `translate(calc(-50% + ${position * spacing}px), -50%)`
           }}
         >
-          {prize.emoji && (
-            <div className={`${styles.prizeEmoji} ${!isSpinning && isCentered ? styles.floating : ''}`}>
-              {prize.emoji}
-            </div>
-          )}
-          <div className={styles.prizeText}>
-            {prize.text}
-          </div>
-          {prize.description && (
-            <div className={styles.prizeDescription}>
-              {prize.description}
-            </div>
+          {prize.image && (
+            <img 
+              src={prize.image} 
+              alt={prize.text}
+              className={styles.prizeImage}
+            />
           )}
         </div>
       );
