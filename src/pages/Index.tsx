@@ -14,7 +14,7 @@ const prizes = [
 ];
 
 export default function Index() {
-  const [coins, setCoins] = useState(5);
+  const [coins, setCoins] = useState(100);
   const [isSpinning, setIsSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [wonPrize, setWonPrize] = useState<typeof prizes[0] | null>(null);
