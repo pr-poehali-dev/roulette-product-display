@@ -82,14 +82,14 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
       <div 
         className={`${styles.wheelTrack} ${isSpinning ? styles.spinning : styles.idle} ${isTransitioning ? styles.transitioning : ''}`}
       >
-        {visiblePrizes.map(({ prize, offset }, idx) => {
+        {visiblePrizes.map(({ prize, offset }) => {
           const cardClass = getCardClass(offset);
           const marginClass = getMarginClass(offset);
           const isCentered = offset === 0;
           
           return (
             <div
-              key={`prize-${idx}-${prize.id}`}
+              key={`prize-${prize.id}-offset-${offset}`}
               className={`${styles.prizeCard} ${cardClass} ${marginClass}`}
               style={{ backgroundColor: prize.color }}
             >
