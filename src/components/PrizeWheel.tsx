@@ -12,6 +12,7 @@ interface Prize {
   discount?: {
     type: 'percent' | 'ruble';
     value: number;
+    badge?: 'purple' | 'orange';
   };
 }
 
@@ -104,7 +105,14 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
             />
           )}
           {prize.discount && (
-            <div className={styles.discountBadge}>
+            <div 
+              className={styles.discountBadge}
+              style={{
+                backgroundImage: prize.discount.badge === 'orange' 
+                  ? 'url(https://cdn.poehali.dev/files/f73f8a28-1481-4982-baba-f3eca5585b52.png)'
+                  : 'url(https://cdn.poehali.dev/files/ad06d42b-8008-4a1c-9637-aa9ee9e1196f.png)'
+              }}
+            >
               <span className={styles.discountValue}>
                 {prize.discount.type === 'percent' ? `-${prize.discount.value}%` : `-${prize.discount.value}₽`}
               </span>
