@@ -16,32 +16,30 @@ interface PrizeWheelProps {
   onSpinComplete: (prize: Prize) => void;
 }
 
+const CARD_WIDTH = 220;
+const CARD_MARGIN_NEAR = 48;
+const CARD_MARGIN_FAR = 8;
+
 export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: PrizeWheelProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [offset, setOffset] = useState(0);
   const animationRef = useRef<NodeJS.Timeout>();
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const extendedPrizes = [...prizes, ...prizes, ...prizes];
+
+  useEffect(() => {
+    setOffset(prizes.length * (CARD_WIDTH + CARD_MARGIN_NEAR * 2));
+  }, [prizes.length]);
 
   useEffect(() => {
     if (!isSpinning) {
       const animateToNext = () => {
-        setIsTransitioning(true);
+        setOffset((prev) => prev + CARD_WIDTH + CARD_MARGIN_NEAR * 2);
         
-        setTimeout(() => {
-          setCurrentIndex((prev) => {
-            const next = prev + 1;
-            return next >= prizes.length ? 0 : next;
-          });
-        }, 50);
-        
-        setTimeout(() => {
-          setIsTransitioning(false);
-        }, 1000);
-        
-        animationRef.current = setTimeout(animateToNext, 2800);
+        animationRef.current = setTimeout(animateToNext, 2500);
       };
       
-      animationRef.current = setTimeout(animateToNext, 2800);
+      animationRef.current = setTimeout(animateToNext, 2500);
       
       return () => {
         if (animationRef.current) {
@@ -49,52 +47,38 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
         }
       };
     }
-  }, [isSpinning, prizes.length]);
+  }, [isSpinning]);
 
-  const getVisiblePrizes = () => {
-    const visible = [];
-    for (let i = -2; i <= 2; i++) {
-      let index = currentIndex + i;
-      if (index < 0) index = prizes.length + index;
-      if (index >= prizes.length) index = index - prizes.length;
-      visible.push({ prize: prizes[index], offset: i });
+  useEffect(() => {
+    const maxOffset = prizes.length * 2 * (CARD_WIDTH + CARD_MARGIN_NEAR * 2);
+    if (offset >= maxOffset) {
+      setTimeout(() => {
+        setOffset(prizes.length * (CARD_WIDTH + CARD_MARGIN_NEAR * 2));
+      }, 1000);
     }
-    return visible;
-  };
-
-  const getCardClass = (offset: number) => {
-    if (offset === 0) return styles.center;
-    if (Math.abs(offset) === 1) return styles.near;
-    if (Math.abs(offset) === 2) return styles.far;
-    return styles.hidden;
-  };
-
-  const visiblePrizes = getVisiblePrizes();
-
-  const getMarginClass = (offset: number) => {
-    if (Math.abs(offset) === 1) return styles.nearMargin;
-    if (Math.abs(offset) === 2) return styles.farMargin;
-    return '';
-  };
+  }, [offset, prizes.length]);
 
   return (
     <div ref={containerRef} className={styles.wheelContainer}>
       <div 
-        className={`${styles.wheelTrack} ${isSpinning ? styles.spinning : styles.idle} ${isTransitioning ? styles.transitioning : ''}`}
+        className={styles.wheelTrack}
+        style={{
+          transform: `translateX(calc(50% - ${offset}px))`,
+          transition: 'transform 1s ease-in-out'
+        }}
       >
-        {visiblePrizes.map(({ prize, offset }, idx) => {
-          const cardClass = getCardClass(offset);
-          const marginClass = getMarginClass(offset);
-          const isCentered = offset === 0;
-          
+        {extendedPrizes.map((prize, idx) => {
           return (
             <div
-              key={`prize-${idx}-${prize.id}`}
-              className={`${styles.prizeCard} ${cardClass} ${marginClass}`}
-              style={{ backgroundColor: prize.color }}
+              key={`prize-${idx}`}
+              className={styles.prizeCard}
+              style={{ 
+                backgroundColor: prize.color,
+                margin: `0 ${CARD_MARGIN_NEAR}px`
+              }}
             >
               {prize.emoji && (
-                <div className={`${styles.prizeEmoji} ${!isSpinning && isCentered ? styles.floating : ''}`}>
+                <div className={styles.prizeEmoji}>
                   {prize.emoji}
                 </div>
               )}
