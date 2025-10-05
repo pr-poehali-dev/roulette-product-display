@@ -6,7 +6,7 @@ import ProductGallery from '@/components/ProductGallery';
 const prizes = [
   { 
     id: 1, 
-    text: 'BYBIT', 
+    text: 'СКИДКА 20%\nНА КОСМЕТИКУ PUSY', 
     type: 'product', 
     color: 'purple', 
     image: 'https://cdn.poehali.dev/files/51e9f46f-7515-4069-9a4f-609e5c3d3f4b.png', 
@@ -15,7 +15,7 @@ const prizes = [
   },
   { 
     id: 2, 
-    text: 'Product 2', 
+    text: 'IPHONE 15', 
     type: 'product', 
     color: 'green', 
     image: 'https://cdn.poehali.dev/files/37b1984d-b698-4108-a1ba-628d101ae93e.png', 
@@ -24,7 +24,7 @@ const prizes = [
   },
   { 
     id: 3, 
-    text: 'Product 3', 
+    text: 'ПОДПИСКА НА ГОД', 
     type: 'product', 
     color: 'orange', 
     image: 'https://cdn.poehali.dev/files/865ad27e-3dce-4b2e-92b7-63aebee30183.png', 
@@ -33,7 +33,7 @@ const prizes = [
   },
   { 
     id: 4, 
-    text: 'Product 4', 
+    text: 'СУПЕР ДЛИННЫЙ ТЕКСТ\nВ ДВЕ СТРОКИ ЧТОБЫ ПРОВЕРИТЬ', 
     type: 'product', 
     color: 'purple', 
     image: 'https://cdn.poehali.dev/files/6a9337b5-b7d7-4642-b210-55676cb99989.png', 
@@ -42,7 +42,7 @@ const prizes = [
   },
   { 
     id: 5, 
-    text: 'KYC SIM', 
+    text: 'VIP', 
     type: 'product', 
     color: 'blue', 
     image: 'https://cdn.poehali.dev/files/58b19872-84ad-4492-8737-c175bb0a6944.png', 
