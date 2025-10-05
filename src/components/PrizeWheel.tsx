@@ -30,7 +30,9 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
     if (!containerRef.current) return CARD_WITH_GAP * cardIndex;
     const containerWidth = containerRef.current.offsetWidth;
     const centerPoint = containerWidth / 2;
-    return (cardIndex * CARD_WITH_GAP) + (CARD_WIDTH / 2) - centerPoint;
+    const cardStartPosition = cardIndex * CARD_WITH_GAP;
+    const cardCenterPosition = cardStartPosition + (CARD_WIDTH / 2);
+    return cardCenterPosition - centerPoint;
   };
 
   useEffect(() => {

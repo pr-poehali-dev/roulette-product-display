@@ -9,7 +9,7 @@
 
 .indicator {
   position: absolute;
-  top: 30px;
+  top: 0;
   left: 50%;
   transform: translateX(-50%);
   font-size: 2rem;
@@ -25,7 +25,7 @@
     transform: translateX(-50%) translateY(0) scale(1);
   }
   50% {
-    transform: translateX(-50%) translateY(4px) scale(1.05);
+    transform: translateX(-50%) translateY(-4px) scale(1.05);
   }
 }
 
