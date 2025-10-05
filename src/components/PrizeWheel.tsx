@@ -18,30 +18,21 @@ interface PrizeWheelProps {
 
 export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: PrizeWheelProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
   const animationRef = useRef<NodeJS.Timeout>();
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isSpinning) {
       const animateToNext = () => {
-        setIsTransitioning(true);
+        setCurrentIndex((prev) => {
+          const next = prev + 1;
+          return next >= prizes.length ? 0 : next;
+        });
         
-        setTimeout(() => {
-          setCurrentIndex((prev) => {
-            const next = prev + 1;
-            return next >= prizes.length ? 0 : next;
-          });
-        }, 50);
-        
-        setTimeout(() => {
-          setIsTransitioning(false);
-        }, 1000);
-        
-        animationRef.current = setTimeout(animateToNext, 2800);
+        animationRef.current = setTimeout(animateToNext, 2500);
       };
       
-      animationRef.current = setTimeout(animateToNext, 2800);
+      animationRef.current = setTimeout(animateToNext, 2500);
       
       return () => {
         if (animationRef.current) {
@@ -80,7 +71,7 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
   return (
     <div ref={containerRef} className={styles.wheelContainer}>
       <div 
-        className={`${styles.wheelTrack} ${isSpinning ? styles.spinning : styles.idle} ${isTransitioning ? styles.transitioning : ''}`}
+        className={`${styles.wheelTrack} ${isSpinning ? styles.spinning : styles.idle}`}
       >
         {visiblePrizes.map(({ prize, offset }) => {
           const cardClass = getCardClass(offset);
@@ -89,7 +80,7 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
           
           return (
             <div
-              key={`prize-${prize.id}-offset-${offset}`}
+              key={`${offset}`}
               className={`${styles.prizeCard} ${cardClass} ${marginClass}`}
               style={{ backgroundColor: prize.color }}
             >
