@@ -7,6 +7,13 @@
   overflow: hidden;
 }
 
+@media (max-width: 768px) {
+  .wheelContainer {
+    height: 100vh;
+    max-height: 600px;
+  }
+}
+
 .indicator {
   position: absolute;
   top: 0;
@@ -19,6 +26,15 @@
   animation: pulse 1.5s ease-in-out infinite;
 }
 
+@media (max-width: 768px) {
+  .indicator {
+    top: 50%;
+    left: 20px;
+    transform: translateY(-50%) rotate(-90deg);
+    animation: pulseMobile 1.5s ease-in-out infinite;
+  }
+}
+
 @keyframes pulse {
   0%,
   100% {
@@ -29,6 +45,16 @@
   }
 }
 
+@keyframes pulseMobile {
+  0%,
+  100% {
+    transform: translateY(-50%) rotate(-90deg) translateX(0) scale(1);
+  }
+  50% {
+    transform: translateY(-50%) rotate(-90deg) translateX(-4px) scale(1.05);
+  }
+}
+
 .wheelTrack {
   display: flex;
   align-items: center;
@@ -36,6 +62,15 @@
   will-change: transform;
   position: absolute;
   left: 50%;
+}
+
+@media (max-width: 768px) {
+  .wheelTrack {
+    flex-direction: column;
+    left: auto;
+    top: 50%;
+    gap: 20px;
+  }
 }
 
 .wheelTrack.spinning {
@@ -64,6 +99,13 @@
   transition:
     transform 0.5s ease,
     opacity 0.5s ease;
+}
+
+@media (max-width: 768px) {
+  .prizeCard {
+    width: 280px;
+    height: 280px;
+  }
 }
 
 .prizeCard.center {

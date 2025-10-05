@@ -17,17 +17,29 @@ interface PrizeWheelProps {
 }
 
 const CARD_WIDTH = 240;
+const CARD_HEIGHT = 280;
 const GAP = 24;
 const CARD_WITH_GAP = CARD_WIDTH + GAP;
+const CARD_WITH_GAP_VERTICAL = CARD_HEIGHT + 20;
 const TOTAL_CARDS = 200;
 
 export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: PrizeWheelProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [offset, setOffset] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const animationRef = useRef<NodeJS.Timeout>();
 
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const calculateCenterOffset = (cardIndex: number) => {
-    return (cardIndex * CARD_WITH_GAP) + (CARD_WIDTH / 2);
+    const spacing = isMobile ? CARD_WITH_GAP_VERTICAL : CARD_WITH_GAP;
+    const cardSize = isMobile ? CARD_HEIGHT : CARD_WIDTH;
+    return (cardIndex * spacing) + (cardSize / 2);
   };
 
   useEffect(() => {
@@ -72,7 +84,9 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
       <div 
         className={`${styles.wheelTrack} ${isSpinning ? styles.spinning : styles.idle}`}
         style={{
-          transform: `translateX(calc(-${offset}px))`
+          transform: isMobile 
+            ? `translateY(calc(-${offset}px))` 
+            : `translateX(calc(-${offset}px))`
         }}
       >
         {Array(TOTAL_CARDS).fill(null).map((_, idx) => {
