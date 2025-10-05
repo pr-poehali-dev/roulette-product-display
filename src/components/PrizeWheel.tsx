@@ -23,21 +23,22 @@ const TOTAL_CARDS = 200;
 
 export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: PrizeWheelProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [offset, setOffset] = useState(CARD_WITH_GAP * 3);
+  const [offset, setOffset] = useState(0);
   const animationRef = useRef<NodeJS.Timeout>();
 
   const calculateCenterOffset = (cardIndex: number) => {
-    if (!containerRef.current) return CARD_WITH_GAP * cardIndex;
+    if (!containerRef.current) return 0;
     const containerWidth = containerRef.current.offsetWidth;
-    const centerPoint = containerWidth / 2;
-    const cardStartPosition = cardIndex * CARD_WITH_GAP;
-    const cardCenterPosition = cardStartPosition + (CARD_WIDTH / 2);
-    return cardCenterPosition - centerPoint;
+    const screenCenter = containerWidth / 2;
+    const cardLeftEdge = cardIndex * CARD_WITH_GAP;
+    const cardCenter = cardLeftEdge + (CARD_WIDTH / 2);
+    return cardCenter - screenCenter;
   };
 
   useEffect(() => {
-    if (!isSpinning) {
+    if (!isSpinning && containerRef.current) {
       let currentIndex = 3;
+      setOffset(calculateCenterOffset(currentIndex));
       
       const animateToNext = () => {
         setOffset(calculateCenterOffset(currentIndex));

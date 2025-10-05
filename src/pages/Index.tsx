@@ -40,8 +40,8 @@ export default function Index() {
         <div className="absolute bottom-20 left-1/3 w-40 h-40 bg-orange-600 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative z-10 container mx-auto py-6 max-w-6xl px-0">
-        <div className="flex items-center justify-between mb-8">
+      <div className="relative z-10 py-6 max-w-full">
+        <div className="flex items-center justify-between mb-8 px-6">
           <div className="flex items-center gap-3 bg-white/95 backdrop-blur-sm px-6 py-3 rounded-2xl shadow-lg">
             <span className="text-3xl font-black text-gray-800">{coins}</span>
             <span className="text-2xl">🪙</span>
@@ -93,7 +93,7 @@ export default function Index() {
           </div>
         )}
 
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-2xl mx-auto px-6">
           <Button
             onClick={spinWheel}
             disabled={coins < 10 || isSpinning}
