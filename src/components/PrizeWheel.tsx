@@ -62,6 +62,12 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
 
   const visiblePrizes = getVisiblePrizes();
 
+  const getMarginClass = (offset: number) => {
+    if (Math.abs(offset) === 1) return styles.nearMargin;
+    if (Math.abs(offset) === 2) return styles.farMargin;
+    return '';
+  };
+
   return (
     <div ref={containerRef} className={styles.wheelContainer}>
       <div 
@@ -69,12 +75,13 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
       >
         {visiblePrizes.map(({ prize, offset }, idx) => {
           const cardClass = getCardClass(offset);
+          const marginClass = getMarginClass(offset);
           const isCentered = offset === 0;
           
           return (
             <div
               key={`prize-${idx}-${prize.id}`}
-              className={`${styles.prizeCard} ${cardClass}`}
+              className={`${styles.prizeCard} ${cardClass} ${marginClass}`}
               style={{ backgroundColor: prize.color }}
             >
               {prize.emoji && (

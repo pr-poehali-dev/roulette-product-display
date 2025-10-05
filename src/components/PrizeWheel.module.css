@@ -11,7 +11,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 24px;
+  gap: 0;
   padding: 0 40px;
 }
 
@@ -65,6 +65,14 @@
   transform: scale(0.6);
   opacity: 0.3;
   z-index: 0;
+}
+
+.prizeCard.nearMargin {
+  margin: 0 32px;
+}
+
+.prizeCard.farMargin {
+  margin: 0 12px;
 }
 
 .prizeEmoji {
