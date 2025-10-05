@@ -16,27 +16,27 @@ interface PrizeWheelProps {
   onSpinComplete: (prize: Prize) => void;
 }
 
-const CARD_WIDTH = 332;
+const CARD_WIDTH = 270;
 const TOTAL_CARDS = 200;
 
 export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: PrizeWheelProps) {
-  const [offset, setOffset] = useState(CARD_WIDTH * 3);
+  const [offset, setOffset] = useState(CARD_WIDTH * 100);
   const animationRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     if (!isSpinning) {
-      let currentIndex = 3;
+      let currentIndex = 100;
       
       const animateToNext = () => {
         setOffset(CARD_WIDTH * currentIndex);
         
         animationRef.current = setTimeout(() => {
           currentIndex++;
-          if (currentIndex >= TOTAL_CARDS - 10) {
-            currentIndex = 3;
+          if (currentIndex >= TOTAL_CARDS - 100) {
+            currentIndex = 100;
           }
           animateToNext();
-        }, 2000);
+        }, 1300);
       };
       
       animateToNext();

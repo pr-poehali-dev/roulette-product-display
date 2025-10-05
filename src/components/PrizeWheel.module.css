@@ -1,6 +1,6 @@
 .wheelContainer {
   position: relative;
-  height: 450px;
+  height: 380px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -9,13 +9,13 @@
 
 .indicator {
   position: absolute;
-  top: -10px;
+  top: 10px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 3rem;
-  color: #ff4444;
+  font-size: 2rem;
+  color: white;
   z-index: 10;
-  filter: drop-shadow(0 4px 8px rgba(255, 68, 68, 0.5));
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
   animation: pulse 1.5s ease-in-out infinite;
 }
 
@@ -25,14 +25,14 @@
     transform: translateX(-50%) translateY(0) scale(1);
   }
   50% {
-    transform: translateX(-50%) translateY(5px) scale(1.1);
+    transform: translateX(-50%) translateY(4px) scale(1.05);
   }
 }
 
 .wheelTrack {
   display: flex;
   align-items: center;
-  gap: 32px;
+  gap: 24px;
   will-change: transform;
 }
 
@@ -46,10 +46,10 @@
 
 .prizeCard {
   flex-shrink: 0;
-  width: 300px;
-  height: 320px;
+  width: 240px;
+  height: 280px;
   border-radius: 24px;
-  padding: 24px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -89,8 +89,8 @@
 }
 
 .prizeEmoji {
-  font-size: 5rem;
-  margin-bottom: 12px;
+  font-size: 4rem;
+  margin-bottom: 10px;
 }
 
 .prizeEmoji.floating {
@@ -109,9 +109,9 @@
 
 .prizeText {
   color: white;
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 900;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   text-align: center;
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
 }
