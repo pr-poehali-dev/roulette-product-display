@@ -68,8 +68,8 @@
 
 .prizeCard {
   position: absolute;
-  width: 170px;
-  height: 190px;
+  width: 150px;
+  height: 170px;
   border-radius: 24px;
   padding: 0;
   display: flex;
@@ -91,8 +91,8 @@
 
 @media (max-width: 768px) {
   .prizeCard {
-    width: 160px;
-    height: 180px;
+    width: 140px;
+    height: 160px;
   }
 }
 
