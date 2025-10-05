@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import Icon from '@/components/ui/icon';
+import PrizeWheel from '@/components/PrizeWheel';
 
 const prizes = [
   { id: 1, text: '-35%', type: 'discount', color: '#4A90E2', description: 'Скидка на первый заказ' },
@@ -16,36 +16,7 @@ const prizes = [
 export default function Index() {
   const [coins, setCoins] = useState(100);
   const [isSpinning, setIsSpinning] = useState(false);
-  const [offset, setOffset] = useState(1050);
   const [wonPrize, setWonPrize] = useState<typeof prizes[0] | null>(null);
-  const animationRef = useRef<NodeJS.Timeout>();
-
-  useEffect(() => {
-    if (!isSpinning) {
-      let currentIndex = 3;
-      const CARD_WIDTH = 350;
-      
-      const animateToNext = () => {
-        setOffset(CARD_WIDTH * currentIndex);
-        
-        animationRef.current = setTimeout(() => {
-          currentIndex++;
-          if (currentIndex >= prizes.length * 20) {
-            currentIndex = 3;
-          }
-          animateToNext();
-        }, 2000);
-      };
-      
-      animateToNext();
-      
-      return () => {
-        if (animationRef.current) {
-          clearTimeout(animationRef.current);
-        }
-      };
-    }
-  }, [isSpinning]);
 
   const spinWheel = () => {
     if (coins < 10 || isSpinning) return;
@@ -54,16 +25,8 @@ export default function Index() {
     setIsSpinning(true);
     setWonPrize(null);
 
-    const randomPrize = prizes[Math.floor(Math.random() * prizes.length)];
-    const prizeIndex = prizes.indexOf(randomPrize);
-    const CARD_WIDTH = 350;
-    const fullSpins = 35;
-    const basePosition = Math.floor(offset / CARD_WIDTH);
-    const targetOffset = (basePosition + fullSpins * prizes.length + prizeIndex) * CARD_WIDTH;
-    
-    setOffset(targetOffset);
-
     setTimeout(() => {
+      const randomPrize = prizes[Math.floor(Math.random() * prizes.length)];
       setIsSpinning(false);
       setWonPrize(randomPrize);
     }, 5000);
@@ -108,74 +71,11 @@ export default function Index() {
           </div>
         </div>
 
-        <div className="relative mb-8 h-[450px] flex items-center justify-center overflow-hidden">
-          <div 
-            className="flex items-center"
-            style={{
-              transform: `translateX(calc(50% - ${offset}px))`,
-              transition: isSpinning 
-                ? 'transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)' 
-                : 'transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)'
-            }}
-          >
-            {Array(200).fill(null).map((_, idx) => {
-              const prize = prizes[idx % prizes.length];
-              const CARD_WIDTH = 350;
-              const cardPosition = idx * CARD_WIDTH;
-              const distanceFromCenter = Math.abs(offset - cardPosition);
-              
-              let scale = 1;
-              let opacity = 1;
-              
-              if (distanceFromCenter === 0) {
-                scale = 1.0;
-                opacity = 1;
-              } else if (distanceFromCenter === CARD_WIDTH) {
-                scale = 0.85;
-                opacity = 0.8;
-              } else if (distanceFromCenter === CARD_WIDTH * 2) {
-                scale = 0.7;
-                opacity = 0.6;
-              } else {
-                scale = 0.55;
-                opacity = 0.4;
-              }
-              
-              return (
-                <div
-                  key={`prize-${idx}`}
-                  className="flex-shrink-0 rounded-3xl shadow-2xl p-6 flex flex-col items-center justify-center relative overflow-hidden mx-4"
-                  style={{ 
-                    backgroundColor: prize.color,
-                    width: '300px',
-                    height: '320px',
-                    transform: `scale(${scale})`,
-                    opacity: opacity,
-                    transition: 'transform 0.5s ease, opacity 0.5s ease'
-                  }}
-                >
-                  {prize.emoji && (
-                    <div className="text-7xl mb-3" style={{
-                      animation: !isSpinning && distanceFromCenter === 0 ? 'float 3s ease-in-out infinite' : 'none'
-                    }}>
-                      {prize.emoji}
-                    </div>
-                  )}
-                  <div className="text-white text-4xl font-black mb-2 drop-shadow-lg text-center">
-                    {prize.text}
-                  </div>
-                  {prize.description && (
-                    <div className="absolute bottom-4 left-4 right-4">
-                      <div className="bg-white/20 backdrop-blur-sm text-white text-xs font-bold px-3 py-2 rounded-xl text-center">
-                        {prize.description}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        <PrizeWheel 
+          prizes={prizes}
+          isSpinning={isSpinning}
+          onSpinComplete={(prize) => setWonPrize(prize)}
+        />
 
         {wonPrize && (
           <div className="mb-6 animate-bounce-in">
