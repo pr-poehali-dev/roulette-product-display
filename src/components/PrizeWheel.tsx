@@ -16,7 +16,7 @@ interface PrizeWheelProps {
   onSpinComplete: (prize: Prize) => void;
 }
 
-const CARD_WIDTH = 332;
+const CARD_WIDTH = 260;
 const TOTAL_CARDS = 200;
 
 export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: PrizeWheelProps) {
