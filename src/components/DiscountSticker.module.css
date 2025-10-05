@@ -3,8 +3,8 @@
   bottom: -95px;
   left: 63%;
   transform: translateX(-50%);
-  width: 480px;
-  height: 220px;
+  width: 400px;
+  height: 183px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -48,8 +48,8 @@
 
 @media (max-width: 768px) {
   .stickerWrapper {
-    width: 400px;
-    height: 180px;
+    width: 333px;
+    height: 150px;
     bottom: -85px;
     left: 63%;
   }
