@@ -53,9 +53,9 @@
 
 @media (max-width: 768px) {
   .wheelTrack {
-    flex-direction: column;
+    flex-direction: column-reverse;
     left: auto;
-    top: 50%;
+    bottom: 50%;
     gap: 20px;
   }
 }
