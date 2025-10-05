@@ -60,6 +60,7 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
 
   return (
     <div className={styles.wheelContainer}>
+      <div className={styles.indicator}>▼</div>
       <div 
         className={`${styles.wheelTrack} ${isSpinning ? styles.spinning : styles.idle}`}
         style={{
