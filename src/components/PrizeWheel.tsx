@@ -16,24 +16,26 @@ interface PrizeWheelProps {
   onSpinComplete: (prize: Prize) => void;
 }
 
-const CARD_WIDTH = 270;
+const CARD_WIDTH = 264;
+const GAP = 24;
+const CARD_WITH_GAP = CARD_WIDTH + GAP;
 const TOTAL_CARDS = 200;
 
 export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: PrizeWheelProps) {
-  const [offset, setOffset] = useState(CARD_WIDTH * 100);
+  const [offset, setOffset] = useState(CARD_WITH_GAP * 3);
   const animationRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     if (!isSpinning) {
-      let currentIndex = 100;
+      let currentIndex = 3;
       
       const animateToNext = () => {
-        setOffset(CARD_WIDTH * currentIndex);
+        setOffset(CARD_WITH_GAP * currentIndex);
         
         animationRef.current = setTimeout(() => {
           currentIndex++;
-          if (currentIndex >= TOTAL_CARDS - 100) {
-            currentIndex = 100;
+          if (currentIndex >= TOTAL_CARDS - 10) {
+            currentIndex = 3;
           }
           animateToNext();
         }, 1300);
@@ -53,8 +55,8 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
     const distance = Math.abs(offset - cardPosition);
     
     if (distance < 10) return styles.center;
-    if (distance < CARD_WIDTH + 10) return styles.near;
-    if (distance < CARD_WIDTH * 2 + 10) return styles.far;
+    if (distance < CARD_WITH_GAP + 10) return styles.near;
+    if (distance < CARD_WITH_GAP * 2 + 10) return styles.far;
     return styles.hidden;
   };
 
@@ -64,12 +66,12 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
       <div 
         className={`${styles.wheelTrack} ${isSpinning ? styles.spinning : styles.idle}`}
         style={{
-          transform: `translateX(calc(50% - ${offset}px))`
+          transform: `translateX(calc(50% - ${offset}px - ${CARD_WIDTH / 2}px))`
         }}
       >
         {Array(TOTAL_CARDS).fill(null).map((_, idx) => {
           const prize = prizes[idx % prizes.length];
-          const cardPosition = idx * CARD_WIDTH;
+          const cardPosition = idx * CARD_WITH_GAP;
           const cardClass = getCardClass(cardPosition);
           const isCentered = Math.abs(offset - cardPosition) < 10;
           
