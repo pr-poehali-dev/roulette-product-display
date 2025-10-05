@@ -111,11 +111,12 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete, targetP
   const renderCards = () => {
     const cards = [];
     const spacing = getCardSpacing();
-    const focusOffset = isMobile ? 18 : 15;
-    const adjustedOffset = offset - focusOffset;
-    const currentIndexFloat = adjustedOffset / spacing;
+    const currentIndexFloat = offset / spacing;
     const centerCard = Math.floor(VISIBLE_CARDS / 2);
     const startIndex = Math.floor(currentIndexFloat) - centerCard;
+    
+    const focusThreshold = isMobile ? 0.08 : 0.06;
+    const fractionalPart = currentIndexFloat - Math.floor(currentIndexFloat);
     
     for (let i = 0; i < VISIBLE_CARDS; i++) {
       const arrayIndex = startIndex + i;
@@ -123,7 +124,14 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete, targetP
       const prize = prizes[prizeIndex];
       const position = i - centerCard;
       const distance = Math.abs(position);
-      const isCentered = distance === 0;
+      
+      let isCentered = distance === 0;
+      if (distance === 0 && fractionalPart > focusThreshold) {
+        isCentered = false;
+      }
+      if (distance === 1 && position === 1 && fractionalPart > (1 - focusThreshold)) {
+        isCentered = true;
+      }
       
       let cardClass = styles.prizeCard;
       if (showWinner && !isCentered) {
