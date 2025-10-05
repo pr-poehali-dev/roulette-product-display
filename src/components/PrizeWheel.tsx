@@ -144,8 +144,8 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete, targetP
           className={cardClass}
           style={{
             transform: isMobile
-              ? `translate(-50%, calc(-50% + ${position * spacing}px))`
-              : `translate(calc(-50% + ${position * spacing}px), -50%)`
+              ? `translate(-50%, calc(-50% + ${-position * spacing}px))`
+              : `translate(calc(-50% + ${-position * spacing}px), -50%)`
           }}
         >
           {isCentered && (
