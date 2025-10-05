@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import styles from './PrizeWheel.module.css';
 
 interface Prize {
@@ -17,23 +16,30 @@ interface PrizeWheelProps {
   onSpinComplete: (prize: Prize) => void;
 }
 
+const CARD_WIDTH = 332;
+const TOTAL_CARDS = 200;
+
 export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: PrizeWheelProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [offset, setOffset] = useState(CARD_WIDTH * 3);
   const animationRef = useRef<NodeJS.Timeout>();
-  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isSpinning) {
+      let currentIndex = 3;
+      
       const animateToNext = () => {
-        setCurrentIndex((prev) => {
-          const next = prev + 1;
-          return next >= prizes.length ? 0 : next;
-        });
+        setOffset(CARD_WIDTH * currentIndex);
         
-        animationRef.current = setTimeout(animateToNext, 2500);
+        animationRef.current = setTimeout(() => {
+          currentIndex++;
+          if (currentIndex >= TOTAL_CARDS - 10) {
+            currentIndex = 3;
+          }
+          animateToNext();
+        }, 2000);
       };
       
-      animationRef.current = setTimeout(animateToNext, 2500);
+      animateToNext();
       
       return () => {
         if (animationRef.current) {
@@ -41,92 +47,53 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
         }
       };
     }
-  }, [isSpinning, prizes.length]);
+  }, [isSpinning]);
 
-  const getVisiblePrizes = () => {
-    const visible = [];
-    for (let i = -2; i <= 2; i++) {
-      let index = currentIndex + i;
-      if (index < 0) index = prizes.length + index;
-      if (index >= prizes.length) index = index - prizes.length;
-      visible.push({ prize: prizes[index], offset: i });
-    }
-    return visible;
-  };
-
-  const getCardClass = (offset: number) => {
-    if (offset === 0) return styles.center;
-    if (Math.abs(offset) === 1) return styles.near;
-    if (Math.abs(offset) === 2) return styles.far;
+  const getCardClass = (cardPosition: number) => {
+    const distance = Math.abs(offset - cardPosition);
+    
+    if (distance < 10) return styles.center;
+    if (distance < CARD_WIDTH + 10) return styles.near;
+    if (distance < CARD_WIDTH * 2 + 10) return styles.far;
     return styles.hidden;
   };
 
-  const visiblePrizes = getVisiblePrizes();
-
-  const getMarginClass = (offset: number) => {
-    if (Math.abs(offset) === 1) return styles.nearMargin;
-    if (Math.abs(offset) === 2) return styles.farMargin;
-    return '';
-  };
-
-  const getScale = (offset: number) => {
-    if (offset === 0) return 1.2;
-    if (Math.abs(offset) === 1) return 0.9;
-    if (Math.abs(offset) === 2) return 0.75;
-    return 0.6;
-  };
-
-  const getOpacity = (offset: number) => {
-    if (offset === 0) return 1;
-    if (Math.abs(offset) === 1) return 0.8;
-    if (Math.abs(offset) === 2) return 0.6;
-    return 0.3;
-  };
-
   return (
-    <div ref={containerRef} className={styles.wheelContainer}>
-      <div className={styles.wheelTrack}>
-        <AnimatePresence mode="popLayout">
-          {visiblePrizes.map(({ prize, offset }) => {
-            const marginClass = getMarginClass(offset);
-            const isCentered = offset === 0;
-            
-            return (
-              <motion.div
-                key={`${offset}`}
-                layout
-                initial={{ scale: getScale(offset), opacity: getOpacity(offset) }}
-                animate={{ 
-                  scale: getScale(offset), 
-                  opacity: getOpacity(offset)
-                }}
-                transition={{ 
-                  duration: 1,
-                  ease: [0.34, 1.56, 0.64, 1]
-                }}
-                className={`${styles.prizeCard} ${marginClass}`}
-                style={{ 
-                  backgroundColor: prize.color,
-                  zIndex: offset === 0 ? 3 : Math.abs(offset) === 1 ? 2 : 1
-                }}
-              >
-                {prize.emoji && (
-                  <div className={`${styles.prizeEmoji} ${!isSpinning && isCentered ? styles.floating : ''}`}>
-                    {prize.emoji}
-                  </div>
-                )}
-                <div className={styles.prizeText}>
-                  {prize.text}
+    <div className={styles.wheelContainer}>
+      <div 
+        className={`${styles.wheelTrack} ${isSpinning ? styles.spinning : styles.idle}`}
+        style={{
+          transform: `translateX(calc(50% - ${offset}px))`
+        }}
+      >
+        {Array(TOTAL_CARDS).fill(null).map((_, idx) => {
+          const prize = prizes[idx % prizes.length];
+          const cardPosition = idx * CARD_WIDTH;
+          const cardClass = getCardClass(cardPosition);
+          const isCentered = Math.abs(offset - cardPosition) < 10;
+          
+          return (
+            <div
+              key={`prize-${idx}`}
+              className={`${styles.prizeCard} ${cardClass}`}
+              style={{ backgroundColor: prize.color }}
+            >
+              {prize.emoji && (
+                <div className={`${styles.prizeEmoji} ${!isSpinning && isCentered ? styles.floating : ''}`}>
+                  {prize.emoji}
                 </div>
-                {prize.description && (
-                  <div className={styles.prizeDescription}>
-                    {prize.description}
-                  </div>
-                )}
-              </motion.div>
-            );
-          })}
-        </AnimatePresence>
+              )}
+              <div className={styles.prizeText}>
+                {prize.text}
+              </div>
+              {prize.description && (
+                <div className={styles.prizeDescription}>
+                  {prize.description}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
