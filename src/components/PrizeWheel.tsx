@@ -83,7 +83,7 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
       
       cards.push(
         <div
-          key={i}
+          key={`${cardIndex}-${prize.id}`}
           className={cardClass}
           style={{ 
             backgroundColor: prize.color,
