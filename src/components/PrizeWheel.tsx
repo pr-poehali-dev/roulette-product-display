@@ -27,9 +27,7 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
   const animationRef = useRef<NodeJS.Timeout>();
 
   const calculateCenterOffset = (cardIndex: number) => {
-    const cardPosition = cardIndex * CARD_WITH_GAP;
-    const halfCard = CARD_WIDTH / 2;
-    return cardPosition + halfCard;
+    return cardIndex * CARD_WITH_GAP;
   };
 
   useEffect(() => {
