@@ -111,7 +111,7 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete, targetP
   const renderCards = () => {
     const cards = [];
     const spacing = getCardSpacing();
-    const currentIndexFloat = -offset / spacing;
+    const currentIndexFloat = offset / spacing;
     const centerCard = Math.floor(VISIBLE_CARDS / 2);
     const startIndex = Math.floor(currentIndexFloat) - centerCard;
     
@@ -145,7 +145,7 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete, targetP
           style={{
             transform: isMobile
               ? `translate(-50%, calc(-50% + ${position * spacing}px))`
-              : `translate(calc(-50% + ${-position * spacing}px), -50%)`
+              : `translate(calc(-50% + ${position * spacing}px), -50%)`
           }}
         >
           {isCentered && (
