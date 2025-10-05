@@ -29,6 +29,33 @@
   box-shadow:
     0 20px 25px -5px rgba(0, 0, 0, 0.1),
     0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transition:
+    transform 1s ease-in-out,
+    opacity 1s ease-in-out;
+}
+
+.prizeCard.center {
+  transform: scale(1.2);
+  opacity: 1;
+  z-index: 3;
+}
+
+.prizeCard.near {
+  transform: scale(0.9);
+  opacity: 0.8;
+  z-index: 2;
+}
+
+.prizeCard.far {
+  transform: scale(0.75);
+  opacity: 0.6;
+  z-index: 1;
+}
+
+.prizeCard.hidden {
+  transform: scale(0.6);
+  opacity: 0.3;
+  z-index: 0;
 }
 
 .prizeEmoji {

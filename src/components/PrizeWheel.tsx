@@ -17,8 +17,7 @@ interface PrizeWheelProps {
 }
 
 const CARD_WIDTH = 220;
-const CARD_MARGIN_NEAR = 48;
-const CARD_MARGIN_FAR = 8;
+const CARD_MARGIN = 48;
 
 export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: PrizeWheelProps) {
   const [offset, setOffset] = useState(0);
@@ -28,13 +27,13 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
   const extendedPrizes = [...prizes, ...prizes, ...prizes];
 
   useEffect(() => {
-    setOffset(prizes.length * (CARD_WIDTH + CARD_MARGIN_NEAR * 2));
+    setOffset(prizes.length * (CARD_WIDTH + CARD_MARGIN * 2));
   }, [prizes.length]);
 
   useEffect(() => {
     if (!isSpinning) {
       const animateToNext = () => {
-        setOffset((prev) => prev + CARD_WIDTH + CARD_MARGIN_NEAR * 2);
+        setOffset((prev) => prev + CARD_WIDTH + CARD_MARGIN * 2);
         
         animationRef.current = setTimeout(animateToNext, 2500);
       };
@@ -50,13 +49,25 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
   }, [isSpinning]);
 
   useEffect(() => {
-    const maxOffset = prizes.length * 2 * (CARD_WIDTH + CARD_MARGIN_NEAR * 2);
+    const maxOffset = prizes.length * 2 * (CARD_WIDTH + CARD_MARGIN * 2);
     if (offset >= maxOffset) {
       setTimeout(() => {
-        setOffset(prizes.length * (CARD_WIDTH + CARD_MARGIN_NEAR * 2));
+        setOffset(prizes.length * (CARD_WIDTH + CARD_MARGIN * 2));
       }, 1000);
     }
   }, [offset, prizes.length]);
+
+  const getCardDistance = (idx: number) => {
+    const centerIndex = Math.round(offset / (CARD_WIDTH + CARD_MARGIN * 2));
+    return Math.abs(idx - centerIndex);
+  };
+
+  const getCardClass = (distance: number) => {
+    if (distance === 0) return styles.center;
+    if (distance === 1) return styles.near;
+    if (distance === 2) return styles.far;
+    return styles.hidden;
+  };
 
   return (
     <div ref={containerRef} className={styles.wheelContainer}>
@@ -68,13 +79,16 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
         }}
       >
         {extendedPrizes.map((prize, idx) => {
+          const distance = getCardDistance(idx);
+          const cardClass = getCardClass(distance);
+          
           return (
             <div
               key={`prize-${idx}`}
-              className={styles.prizeCard}
+              className={`${styles.prizeCard} ${cardClass}`}
               style={{ 
                 backgroundColor: prize.color,
-                margin: `0 ${CARD_MARGIN_NEAR}px`
+                margin: `0 ${CARD_MARGIN}px`
               }}
             >
               {prize.emoji && (
