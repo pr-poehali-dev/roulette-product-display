@@ -37,9 +37,12 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
   }, []);
 
   const calculateCenterOffset = (cardIndex: number) => {
-    const spacing = isMobile ? CARD_WITH_GAP_VERTICAL : CARD_WITH_GAP;
-    const cardSize = isMobile ? CARD_HEIGHT : CARD_WIDTH;
-    return (cardIndex * spacing) + (cardSize / 2);
+    if (isMobile) {
+      const spacing = 216;
+      const cardSize = 200;
+      return (cardIndex * spacing) + (cardSize / 2);
+    }
+    return (cardIndex * CARD_WITH_GAP) + (CARD_WIDTH / 2);
   };
 
   useEffect(() => {

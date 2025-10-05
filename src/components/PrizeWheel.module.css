@@ -28,10 +28,10 @@
 
 @media (max-width: 768px) {
   .indicator {
-    top: 50%;
-    left: 20px;
-    transform: translateY(-50%) rotate(-90deg);
-    animation: pulseMobile 1.5s ease-in-out infinite;
+    top: calc(50% - 2px);
+    left: 50%;
+    transform: translateX(-50%);
+    animation: pulse 1.5s ease-in-out infinite;
   }
 }
 
@@ -42,16 +42,6 @@
   }
   50% {
     transform: translateX(-50%) translateY(-4px) scale(1.05);
-  }
-}
-
-@keyframes pulseMobile {
-  0%,
-  100% {
-    transform: translateY(-50%) rotate(-90deg) translateX(0) scale(1);
-  }
-  50% {
-    transform: translateY(-50%) rotate(-90deg) translateX(-4px) scale(1.05);
   }
 }
 
@@ -103,8 +93,8 @@
 
 @media (max-width: 768px) {
   .prizeCard {
-    width: 280px;
-    height: 280px;
+    width: 200px;
+    height: 200px;
   }
 }
 
