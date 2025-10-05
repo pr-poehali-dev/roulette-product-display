@@ -88,8 +88,8 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
           style={{ 
             backgroundColor: prize.color,
             transform: isMobile 
-              ? `translateY(${position * spacing}px)` 
-              : `translateX(${position * spacing}px)`
+              ? `translate(-50%, calc(-50% + ${position * spacing}px))` 
+              : `translate(calc(-50% + ${position * spacing}px), -50%)`
           }}
         >
           {prize.emoji && (
