@@ -16,30 +16,33 @@ const prizes = [
 export default function Index() {
   const [coins, setCoins] = useState(100);
   const [isSpinning, setIsSpinning] = useState(false);
-  const [offset, setOffset] = useState(-350 * 3);
+  const [offset, setOffset] = useState(1050);
   const [wonPrize, setWonPrize] = useState<typeof prizes[0] | null>(null);
-  const autoScrollRef = useRef<number>();
+  const animationRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     if (!isSpinning) {
       let currentIndex = 3;
-      const prizeWidth = 350;
+      const CARD_WIDTH = 350;
       
       const animateToNext = () => {
-        const targetOffset = -(prizeWidth * currentIndex);
-        setOffset(targetOffset);
+        setOffset(CARD_WIDTH * currentIndex);
         
-        setTimeout(() => {
-          currentIndex = (currentIndex + 1) % prizes.length;
-          if (currentIndex === 0) currentIndex = prizes.length;
+        animationRef.current = setTimeout(() => {
+          currentIndex++;
+          if (currentIndex >= prizes.length * 20) {
+            currentIndex = 3;
+          }
           animateToNext();
         }, 2000);
       };
       
-      const timeoutId = setTimeout(animateToNext, 100);
+      animateToNext();
       
       return () => {
-        clearTimeout(timeoutId);
+        if (animationRef.current) {
+          clearTimeout(animationRef.current);
+        }
       };
     }
   }, [isSpinning]);
@@ -53,9 +56,10 @@ export default function Index() {
 
     const randomPrize = prizes[Math.floor(Math.random() * prizes.length)];
     const prizeIndex = prizes.indexOf(randomPrize);
-    const prizeWidth = 350;
+    const CARD_WIDTH = 350;
     const fullSpins = 35;
-    const targetOffset = (prizeWidth * prizeIndex) + (prizeWidth * prizes.length * fullSpins);
+    const basePosition = Math.floor(offset / CARD_WIDTH);
+    const targetOffset = (basePosition + fullSpins * prizes.length + prizeIndex) * CARD_WIDTH;
     
     setOffset(targetOffset);
 
@@ -114,16 +118,17 @@ export default function Index() {
                 : 'transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)'
             }}
           >
-            {Array(50).fill(prizes).flat().map((prize, idx) => {
-              const position = Math.abs(offset - (idx * 350));
-              const distanceFromCenter = Math.abs(position % (350 * prizes.length));
-              const isCentered = distanceFromCenter < 175;
-              const scale = isCentered ? 1.1 : 0.85;
-              const opacity = isCentered ? 1 : 0.6;
+            {Array(200).fill(null).map((_, idx) => {
+              const prize = prizes[idx % prizes.length];
+              const cardPosition = idx * 350;
+              const distanceFromCenter = Math.abs(offset - cardPosition);
+              const isCentered = distanceFromCenter < 50;
+              const scale = isCentered ? 1.15 : 0.85;
+              const opacity = isCentered ? 1 : 0.65;
               
               return (
                 <div
-                  key={`${prize.id}-${idx}`}
+                  key={`prize-${idx}`}
                   className="flex-shrink-0 w-[320px] h-[280px] rounded-3xl shadow-2xl p-8 flex flex-col items-center justify-center relative overflow-hidden"
                   style={{ 
                     backgroundColor: prize.color,
