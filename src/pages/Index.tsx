@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 
@@ -16,8 +16,37 @@ const prizes = [
 export default function Index() {
   const [coins, setCoins] = useState(100);
   const [isSpinning, setIsSpinning] = useState(false);
-  const [offset, setOffset] = useState(0);
+  const [offset, setOffset] = useState(-350 * 3);
   const [wonPrize, setWonPrize] = useState<typeof prizes[0] | null>(null);
+  const autoScrollRef = useRef<number>();
+
+  useEffect(() => {
+    if (!isSpinning) {
+      const startAutoScroll = () => {
+        autoScrollRef.current = window.setInterval(() => {
+          setOffset(prev => prev - 1);
+        }, 20);
+      };
+      
+      startAutoScroll();
+      
+      return () => {
+        if (autoScrollRef.current) {
+          clearInterval(autoScrollRef.current);
+        }
+      };
+    } else {
+      if (autoScrollRef.current) {
+        clearInterval(autoScrollRef.current);
+      }
+    }
+  }, [isSpinning]);
+
+  useEffect(() => {
+    if (offset < -(350 * prizes.length * 10)) {
+      setOffset(-350 * 3);
+    }
+  }, [offset]);
 
   const spinWheel = () => {
     if (coins < 10 || isSpinning) return;
@@ -29,14 +58,16 @@ export default function Index() {
     const randomPrize = prizes[Math.floor(Math.random() * prizes.length)];
     const prizeIndex = prizes.indexOf(randomPrize);
     const prizeWidth = 350;
-    const targetOffset = -(prizeWidth * prizeIndex) - (prizeWidth * prizes.length * 3);
+    const fullSpins = 30;
+    const currentCycle = Math.floor(Math.abs(offset) / (prizeWidth * prizes.length));
+    const targetOffset = -(prizeWidth * prizeIndex) - (prizeWidth * prizes.length * (currentCycle + fullSpins));
     
     setOffset(targetOffset);
 
     setTimeout(() => {
       setIsSpinning(false);
       setWonPrize(randomPrize);
-    }, 3500);
+    }, 5000);
   };
 
   return (
@@ -87,28 +118,31 @@ export default function Index() {
             className="flex gap-6 items-center"
             style={{
               transform: `translateX(calc(50% + ${offset}px))`,
-              transition: isSpinning ? 'transform 3.5s cubic-bezier(0.25, 0.1, 0.25, 1)' : 'none'
+              transition: isSpinning 
+                ? 'transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)' 
+                : 'none'
             }}
           >
-            {[...prizes, ...prizes, ...prizes, ...prizes, ...prizes].map((prize, idx) => (
+            {Array(50).fill(prizes).flat().map((prize, idx) => (
               <div
                 key={`${prize.id}-${idx}`}
-                className="flex-shrink-0 w-[320px] h-[280px] rounded-3xl shadow-2xl p-8 flex flex-col items-center justify-center relative overflow-hidden group"
+                className="flex-shrink-0 w-[320px] h-[280px] rounded-3xl shadow-2xl p-8 flex flex-col items-center justify-center relative overflow-hidden group hover:scale-105 transition-transform"
                 style={{ 
-                  backgroundColor: prize.color,
-                  transform: isSpinning ? 'scale(0.95)' : 'scale(1)',
-                  transition: 'transform 0.3s ease'
+                  backgroundColor: prize.color
                 }}
               >
                 {prize.emoji && (
-                  <div className="text-8xl mb-4 animate-float">
+                  <div className="text-8xl mb-4" style={{
+                    animation: isSpinning ? 'none' : 'float 3s ease-in-out infinite',
+                    animationDelay: `${idx * 0.1}s`
+                  }}>
                     {prize.emoji}
                   </div>
                 )}
                 <div className="text-white text-5xl font-black mb-3 drop-shadow-lg text-center">
                   {prize.text}
                 </div>
-                {prize.type === 'discount' && (
+                {prize.description && (
                   <div className="absolute bottom-6 left-6 right-6">
                     <div className="bg-white/20 backdrop-blur-sm text-white text-sm font-bold px-4 py-2 rounded-xl text-center">
                       {prize.description}
