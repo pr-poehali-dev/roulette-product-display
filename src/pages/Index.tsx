@@ -4,11 +4,51 @@ import PrizeWheel from '@/components/PrizeWheel';
 import ProductGallery from '@/components/ProductGallery';
 
 const prizes = [
-  { id: 1, text: 'BYBIT', type: 'product', color: '#1a1f2e', image: 'https://cdn.poehali.dev/files/51e9f46f-7515-4069-9a4f-609e5c3d3f4b.png', description: 'Торговая платформа' },
-  { id: 2, text: 'Product 2', type: 'product', color: '#a3e635', image: 'https://cdn.poehali.dev/files/37b1984d-b698-4108-a1ba-628d101ae93e.png', description: 'Зелёный продукт' },
-  { id: 3, text: 'Product 3', type: 'product', color: '#ef4444', image: 'https://cdn.poehali.dev/files/865ad27e-3dce-4b2e-92b7-63aebee30183.png', description: 'Красный продукт' },
-  { id: 4, text: 'Product 4', type: 'product', color: '#a855f7', image: 'https://cdn.poehali.dev/files/6a9337b5-b7d7-4642-b210-55676cb99989.png', description: 'Фиолетовый продукт' },
-  { id: 5, text: 'KYC SIM', type: 'product', color: '#1f2937', image: 'https://cdn.poehali.dev/files/58b19872-84ad-4492-8737-c175bb0a6944.png', description: 'Сим-карта HEY, KYC!' },
+  { 
+    id: 1, 
+    text: 'BYBIT', 
+    type: 'product', 
+    color: 'purple', 
+    image: 'https://cdn.poehali.dev/files/51e9f46f-7515-4069-9a4f-609e5c3d3f4b.png', 
+    description: 'Торговая платформа',
+    discount: { type: 'percent' as const, value: '50' }
+  },
+  { 
+    id: 2, 
+    text: 'Product 2', 
+    type: 'product', 
+    color: 'green', 
+    image: 'https://cdn.poehali.dev/files/37b1984d-b698-4108-a1ba-628d101ae93e.png', 
+    description: 'Зелёный продукт',
+    discount: { type: 'price' as const, value: '999' }
+  },
+  { 
+    id: 3, 
+    text: 'Product 3', 
+    type: 'product', 
+    color: 'orange', 
+    image: 'https://cdn.poehali.dev/files/865ad27e-3dce-4b2e-92b7-63aebee30183.png', 
+    description: 'Красный продукт',
+    discount: { type: 'percent' as const, value: '30' }
+  },
+  { 
+    id: 4, 
+    text: 'Product 4', 
+    type: 'product', 
+    color: 'purple', 
+    image: 'https://cdn.poehali.dev/files/6a9337b5-b7d7-4642-b210-55676cb99989.png', 
+    description: 'Фиолетовый продукт',
+    discount: { type: 'percent' as const, value: '70' }
+  },
+  { 
+    id: 5, 
+    text: 'KYC SIM', 
+    type: 'product', 
+    color: 'blue', 
+    image: 'https://cdn.poehali.dev/files/58b19872-84ad-4492-8737-c175bb0a6944.png', 
+    description: 'Сим-карта HEY, KYC!',
+    discount: { type: 'price' as const, value: '1490' }
+  },
 ];
 
 export default function Index() {

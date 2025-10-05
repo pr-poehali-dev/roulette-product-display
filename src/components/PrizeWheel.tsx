@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import styles from './PrizeWheel.module.css';
+import DiscountSticker from './DiscountSticker';
 
 interface Prize {
   id: number;
@@ -9,6 +10,10 @@ interface Prize {
   emoji?: string;
   image?: string;
   description: string;
+  discount?: {
+    type: 'percent' | 'price';
+    value: string;
+  };
 }
 
 interface PrizeWheelProps {
@@ -92,6 +97,13 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
               : `translate(calc(-50% + ${position * spacing}px), -50%)`
           }}
         >
+          {prize.discount && isCentered && (
+            <DiscountSticker 
+              type={prize.discount.type} 
+              value={prize.discount.value}
+              color={prize.color as any}
+            />
+          )}
           {prize.image && (
             <img 
               src={prize.image} 
