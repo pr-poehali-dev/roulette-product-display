@@ -16,21 +16,30 @@ interface PrizeWheelProps {
   onSpinComplete: (prize: Prize) => void;
 }
 
-const CARD_WIDTH = 264;
+const CARD_WIDTH = 240;
 const GAP = 24;
 const CARD_WITH_GAP = CARD_WIDTH + GAP;
 const TOTAL_CARDS = 200;
 
 export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: PrizeWheelProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const [offset, setOffset] = useState(CARD_WITH_GAP * 3);
   const animationRef = useRef<NodeJS.Timeout>();
+
+  const calculateCenterOffset = (cardIndex: number) => {
+    if (!containerRef.current) return CARD_WITH_GAP * cardIndex;
+    const containerWidth = containerRef.current.offsetWidth;
+    const centerPoint = containerWidth / 2;
+    const cardCenter = CARD_WIDTH / 2;
+    return (cardIndex * CARD_WITH_GAP) - centerPoint + cardCenter;
+  };
 
   useEffect(() => {
     if (!isSpinning) {
       let currentIndex = 3;
       
       const animateToNext = () => {
-        setOffset(CARD_WITH_GAP * currentIndex);
+        setOffset(calculateCenterOffset(currentIndex));
         
         animationRef.current = setTimeout(() => {
           currentIndex++;
@@ -61,7 +70,7 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
   };
 
   return (
-    <div className={styles.wheelContainer}>
+    <div className={styles.wheelContainer} ref={containerRef}>
       <div className={styles.indicator}>▼</div>
       <div 
         className={`${styles.wheelTrack} ${isSpinning ? styles.spinning : styles.idle}`}
