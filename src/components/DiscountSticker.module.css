@@ -1,7 +1,7 @@
 .stickerWrapper {
   position: absolute;
   bottom: -80px;
-  left: 63%;
+  left: 66%;
   transform: translateX(-50%);
   width: 400px;
   height: 183px;
@@ -51,7 +51,7 @@
     width: 333px;
     height: 150px;
     bottom: -70px;
-    left: 63%;
+    left: 66%;
   }
 
   .value {
