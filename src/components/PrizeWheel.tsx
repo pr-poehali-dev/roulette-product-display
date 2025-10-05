@@ -44,13 +44,9 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
   useEffect(() => {
     if (!isSpinning) {
       const spacing = getCardSpacing();
-      const loopSize = prizes.length * spacing;
       
       const animateToNext = () => {
-        setOffset(prev => {
-          const next = prev + spacing;
-          return next >= loopSize ? next - loopSize : next;
-        });
+        setOffset(prev => prev + spacing);
         
         animationRef.current = setTimeout(() => {
           animateToNext();
@@ -67,17 +63,22 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
         }
       };
     }
-  }, [isSpinning, isMobile, prizes.length]);
+  }, [isSpinning, isMobile]);
 
-  const getCardClass = (cardPosition: number) => {
+  const getVisibleRange = () => {
     const spacing = getCardSpacing();
-    const loopSize = prizes.length * spacing;
-    const normalizedOffset = offset % loopSize;
-    const normalizedPosition = cardPosition % loopSize;
-    
-    let distance = Math.abs(normalizedOffset - normalizedPosition);
-    const wrapDistance = loopSize - distance;
-    distance = Math.min(distance, wrapDistance);
+    const centerIndex = Math.floor(offset / spacing);
+    const visibleCount = 10;
+    return {
+      start: centerIndex - visibleCount,
+      end: centerIndex + visibleCount
+    };
+  };
+
+  const getCardClass = (cardIndex: number) => {
+    const spacing = getCardSpacing();
+    const cardOffset = cardIndex * spacing;
+    const distance = Math.abs(offset - cardOffset);
     
     if (distance < 10) return styles.center;
     if (distance < spacing + 10) return styles.near;
@@ -96,42 +97,44 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
             : `translateX(calc(-${offset}px))`
         }}
       >
-        {Array(prizes.length * 3).fill(null).map((_, idx) => {
-          const prize = prizes[idx % prizes.length];
-          const spacing = getCardSpacing();
-          const cardPosition = idx * spacing;
-          const cardClass = getCardClass(cardPosition);
+        {(() => {
+          const { start, end } = getVisibleRange();
+          const cards = [];
           
-          const loopSize = prizes.length * spacing;
-          const normalizedOffset = offset % loopSize;
-          const normalizedPosition = cardPosition % loopSize;
-          let distance = Math.abs(normalizedOffset - normalizedPosition);
-          const wrapDistance = loopSize - distance;
-          distance = Math.min(distance, wrapDistance);
-          const isCentered = distance < 10;
-          
-          return (
-            <div
-              key={`prize-${idx}`}
-              className={`${styles.prizeCard} ${cardClass}`}
-              style={{ backgroundColor: prize.color }}
-            >
-              {prize.emoji && (
-                <div className={`${styles.prizeEmoji} ${!isSpinning && isCentered ? styles.floating : ''}`}>
-                  {prize.emoji}
+          for (let i = start; i <= end; i++) {
+            const prizeIndex = ((i % prizes.length) + prizes.length) % prizes.length;
+            const prize = prizes[prizeIndex];
+            const spacing = getCardSpacing();
+            const cardOffset = i * spacing;
+            const cardClass = getCardClass(i);
+            const distance = Math.abs(offset - cardOffset);
+            const isCentered = distance < 10;
+            
+            cards.push(
+              <div
+                key={`prize-${i}`}
+                className={`${styles.prizeCard} ${cardClass}`}
+                style={{ backgroundColor: prize.color }}
+              >
+                {prize.emoji && (
+                  <div className={`${styles.prizeEmoji} ${!isSpinning && isCentered ? styles.floating : ''}`}>
+                    {prize.emoji}
+                  </div>
+                )}
+                <div className={styles.prizeText}>
+                  {prize.text}
                 </div>
-              )}
-              <div className={styles.prizeText}>
-                {prize.text}
+                {prize.description && (
+                  <div className={styles.prizeDescription}>
+                    {prize.description}
+                  </div>
+                )}
               </div>
-              {prize.description && (
-                <div className={styles.prizeDescription}>
-                  {prize.description}
-                </div>
-              )}
-            </div>
-          );
-        })}
+            );
+          }
+          
+          return cards;
+        })()}
       </div>
     </div>
   );
