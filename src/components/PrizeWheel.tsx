@@ -29,7 +29,8 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
   const containerRef = useRef<HTMLDivElement>(null);
   const [offset, setOffset] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
-  const animationRef = useRef<NodeJS.Timeout>();
+  const animationRef = useRef<number>();
+  const startTimeRef = useRef<number>(0);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 768);
@@ -50,39 +51,42 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
 
   useEffect(() => {
     if (!isSpinning) {
-      let currentIndex = 3;
-      setOffset(calculateCenterOffset(currentIndex));
+      const spacing = getCardSpacing();
+      const speed = spacing / 1300;
       
-      const animateToNext = () => {
-        currentIndex--;
-        if (currentIndex < 0) {
-          currentIndex = TOTAL_CARDS - 10;
-        }
-        setOffset(calculateCenterOffset(currentIndex));
+      startTimeRef.current = Date.now();
+      
+      const animate = () => {
+        const elapsed = Date.now() - startTimeRef.current;
+        const currentOffset = elapsed * speed;
         
-        animationRef.current = setTimeout(() => {
-          animateToNext();
-        }, 1300);
+        setOffset(currentOffset);
+        
+        animationRef.current = requestAnimationFrame(animate);
       };
       
-      animationRef.current = setTimeout(() => {
-        animateToNext();
-      }, 1300);
+      animationRef.current = requestAnimationFrame(animate);
       
       return () => {
         if (animationRef.current) {
-          clearTimeout(animationRef.current);
+          cancelAnimationFrame(animationRef.current);
         }
       };
     }
   }, [isSpinning, isMobile]);
 
   const getCardClass = (cardPosition: number) => {
-    const distance = Math.abs(offset - cardPosition);
+    const spacing = getCardSpacing();
+    const normalizedOffset = offset % (prizes.length * spacing);
+    const normalizedPosition = cardPosition % (prizes.length * spacing);
+    
+    let distance = Math.abs(normalizedOffset - normalizedPosition);
+    const loopDistance = (prizes.length * spacing) - distance;
+    distance = Math.min(distance, loopDistance);
     
     if (distance < 10) return styles.center;
-    if (distance < CARD_WITH_GAP + 10) return styles.near;
-    if (distance < CARD_WITH_GAP * 2 + 10) return styles.far;
+    if (distance < spacing + 10) return styles.near;
+    if (distance < spacing * 2 + 10) return styles.far;
     return styles.hidden;
   };
 
@@ -90,19 +94,25 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
     <div className={styles.wheelContainer} ref={containerRef}>
       <div className={styles.indicator}>▼</div>
       <div 
-        className={`${styles.wheelTrack} ${isSpinning ? styles.spinning : styles.idle}`}
+        className={`${styles.wheelTrack} ${isSpinning ? styles.spinning : ''}`}
         style={{
           transform: isMobile 
             ? `translateY(calc(-${offset}px))` 
             : `translateX(calc(-${offset}px))`
         }}
       >
-        {Array(TOTAL_CARDS).fill(null).map((_, idx) => {
+        {Array(prizes.length * 3).fill(null).map((_, idx) => {
           const prize = prizes[idx % prizes.length];
           const spacing = getCardSpacing();
           const cardPosition = idx * spacing;
           const cardClass = getCardClass(cardPosition);
-          const isCentered = Math.abs(offset - cardPosition) < 10;
+          
+          const normalizedOffset = offset % (prizes.length * spacing);
+          const normalizedPosition = cardPosition % (prizes.length * spacing);
+          let distance = Math.abs(normalizedOffset - normalizedPosition);
+          const loopDistance = (prizes.length * spacing) - distance;
+          distance = Math.min(distance, loopDistance);
+          const isCentered = distance < 10;
           
           return (
             <div
