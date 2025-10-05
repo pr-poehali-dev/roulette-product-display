@@ -97,7 +97,7 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete }: Prize
               : `translate(calc(-50% + ${position * spacing}px), -50%)`
           }}
         >
-          {prize.discount && isCentered && (
+          {prize.discount && (
             <DiscountSticker 
               type={prize.discount.type} 
               value={prize.discount.value}

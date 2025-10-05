@@ -1,7 +1,7 @@
 .stickerWrapper {
   position: absolute;
-  bottom: -30px;
-  left: 50%;
+  bottom: -50px;
+  left: 55%;
   transform: translateX(-50%);
   width: 380px;
   height: 180px;
@@ -29,7 +29,7 @@
 }
 
 .value {
-  font-size: 72px;
+  font-size: 56px;
   font-weight: 900;
   color: white;
   line-height: 1;
@@ -39,7 +39,7 @@
 
 .percent,
 .currency {
-  font-size: 48px;
+  font-size: 36px;
   font-weight: 800;
   color: rgba(255, 255, 255, 0.98);
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
@@ -50,15 +50,16 @@
   .stickerWrapper {
     width: 320px;
     height: 150px;
-    bottom: -25px;
+    bottom: -40px;
+    left: 55%;
   }
 
   .value {
-    font-size: 60px;
+    font-size: 48px;
   }
 
   .percent,
   .currency {
-    font-size: 40px;
+    font-size: 32px;
   }
 }
