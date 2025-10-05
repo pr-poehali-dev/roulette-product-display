@@ -35,8 +35,7 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete, targetP
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [showWinner, setShowWinner] = useState(false);
-  const animationRef = useRef<NodeJS.Timeout>();
-  const spinCountRef = useRef(0);
+  const animationRef = useRef<number>();
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 768);
@@ -51,74 +50,62 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete, targetP
 
   useEffect(() => {
     if (animationRef.current) {
-      clearTimeout(animationRef.current);
+      cancelAnimationFrame(animationRef.current);
     }
 
     if (isSpinning) {
       setShowWinner(false);
-      spinCountRef.current = 0;
       
-      const spin = () => {
-        setCurrentIndex(prev => prev + 1);
-        spinCountRef.current += 1;
+      const targetIndex = prizes.findIndex(p => p.id === targetPrizeId);
+      const finalPrizeIndex = targetIndex >= 0 ? targetIndex : 0;
+      
+      const totalRotations = prizes.length * 4 + finalPrizeIndex;
+      const duration = 5000;
+      const startTime = Date.now();
+      
+      const animate = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
         
-        const fastSpins = prizes.length * 3;
-        const slowSpins = prizes.length;
-        const totalSpins = fastSpins + slowSpins;
+        const easeOut = 1 - Math.pow(1 - progress, 4);
         
-        if (spinCountRef.current < fastSpins) {
-          animationRef.current = setTimeout(spin, 50);
-        } else if (spinCountRef.current < totalSpins) {
-          const slowProgress = spinCountRef.current - fastSpins;
-          const delay = 50 + slowProgress * 40;
-          animationRef.current = setTimeout(spin, delay);
+        const currentRotation = easeOut * totalRotations;
+        const newIndex = Math.floor(currentRotation);
+        
+        setCurrentIndex(newIndex);
+        
+        if (progress < 1) {
+          animationRef.current = requestAnimationFrame(animate);
         } else {
-          const targetIndex = prizes.findIndex(p => p.id === targetPrizeId);
-          const finalPrizeIndex = targetIndex >= 0 ? targetIndex : 0;
-          const currentPrizeIndex = currentIndex % prizes.length;
-          
-          if (currentPrizeIndex === finalPrizeIndex) {
-            setTimeout(() => {
-              setShowWinner(true);
-              onSpinComplete(prizes[finalPrizeIndex]);
-            }, 500);
-          } else {
-            const stepsToTarget = (finalPrizeIndex - currentPrizeIndex + prizes.length) % prizes.length;
-            let steps = 0;
-            
-            const finalAdjust = () => {
-              if (steps < stepsToTarget) {
-                setCurrentIndex(prev => prev + 1);
-                steps++;
-                animationRef.current = setTimeout(finalAdjust, 200);
-              } else {
-                setTimeout(() => {
-                  setShowWinner(true);
-                  onSpinComplete(prizes[finalPrizeIndex]);
-                }, 500);
-              }
-            };
-            
-            finalAdjust();
-          }
+          setTimeout(() => {
+            setShowWinner(true);
+            onSpinComplete(prizes[finalPrizeIndex]);
+          }, 300);
         }
       };
       
-      spin();
+      animationRef.current = requestAnimationFrame(animate);
     } else if (!showWinner) {
+      let lastTime = Date.now();
+      
       const idleAnimation = () => {
-        setCurrentIndex(prev => prev + 1);
-        animationRef.current = setTimeout(idleAnimation, 1950);
+        const now = Date.now();
+        if (now - lastTime >= 2000) {
+          setCurrentIndex(prev => prev + 1);
+          lastTime = now;
+        }
+        animationRef.current = requestAnimationFrame(idleAnimation);
       };
-      animationRef.current = setTimeout(idleAnimation, 1950);
+      
+      animationRef.current = requestAnimationFrame(idleAnimation);
     }
 
     return () => {
       if (animationRef.current) {
-        clearTimeout(animationRef.current);
+        cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [isSpinning, showWinner, prizes, targetPrizeId, onSpinComplete, currentIndex]);
+  }, [isSpinning, showWinner, prizes, targetPrizeId, onSpinComplete]);
 
   const renderCards = () => {
     const cards = [];
