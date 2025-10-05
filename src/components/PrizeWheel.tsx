@@ -112,17 +112,17 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete, targetP
   const renderCards = () => {
     const cards = [];
     const spacing = getCardSpacing();
-    const extendedPrizes = [...prizes, ...prizes, ...prizes, ...prizes, ...prizes, ...prizes];
-    
     const currentIndexFloat = offset / spacing;
     const centerCard = Math.floor(VISIBLE_CARDS / 2);
+    const startIndex = Math.floor(currentIndexFloat) - centerCard;
     
     for (let i = 0; i < VISIBLE_CARDS; i++) {
-      const arrayIndex = Math.floor(currentIndexFloat) + i;
-      const prizeIndex = arrayIndex % prizes.length;
+      const arrayIndex = startIndex + i;
+      const prizeIndex = ((arrayIndex % prizes.length) + prizes.length) % prizes.length;
       const prize = prizes[prizeIndex];
-      const isCentered = i === centerCard;
-      const distance = Math.abs(i - centerCard);
+      const position = i - centerCard;
+      const distance = Math.abs(position);
+      const isCentered = distance === 0;
       
       let cardClass = styles.prizeCard;
       if (showWinner && !isCentered) {
@@ -143,6 +143,11 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete, targetP
         <div
           key={`${arrayIndex}-${prizeIndex}`}
           className={cardClass}
+          style={{
+            transform: isMobile
+              ? `translate(-50%, calc(-50% + ${position * spacing}px))`
+              : `translate(calc(-50% + ${position * spacing}px), -50%)`
+          }}
         >
           {isCentered && (
             <div className={styles.prizeTitle}>
@@ -172,7 +177,6 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete, targetP
 
   const spacing = getCardSpacing();
   const currentIndexFloat = offset / spacing;
-  const centerCard = Math.floor(VISIBLE_CARDS / 2);
   const translateOffset = -(currentIndexFloat - Math.floor(currentIndexFloat)) * spacing;
 
   return (
@@ -180,7 +184,7 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete, targetP
       <div className={styles.indicator}>▼</div>
       <div 
         ref={trackRef}
-        className={`${styles.wheelTrack} ${isSpinning ? styles.spinning : styles.idle}`}
+        className={styles.wheelTrack}
         style={{
           transform: isMobile 
             ? `translateY(${translateOffset}px)` 
