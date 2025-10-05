@@ -34,7 +34,7 @@ const VISIBLE_CARDS = 7;
 export default function PrizeWheel({ prizes, isSpinning, onSpinComplete, targetPrizeId }: PrizeWheelProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
-  const [spinState, setSpinState] = useState<'idle' | 'fast' | 'slow' | 'stopped'>('idle');
+  const [showWinner, setShowWinner] = useState(false);
   const animationRef = useRef<NodeJS.Timeout>();
   const spinCountRef = useRef(0);
 
@@ -55,58 +55,57 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete, targetP
     }
 
     if (isSpinning) {
+      setShowWinner(false);
       spinCountRef.current = 0;
-      setSpinState('fast');
       
-      const fastSpin = () => {
+      const spin = () => {
         setCurrentIndex(prev => prev + 1);
         spinCountRef.current += 1;
         
-        if (spinCountRef.current < prizes.length * 3) {
-          animationRef.current = setTimeout(fastSpin, 50);
-        } else {
-          setSpinState('slow');
-          slowSpin();
-        }
-      };
-      
-      const slowSpin = () => {
-        setCurrentIndex(prev => prev + 1);
-        spinCountRef.current += 1;
+        const fastSpins = prizes.length * 3;
+        const slowSpins = prizes.length;
+        const totalSpins = fastSpins + slowSpins;
         
-        const targetIndex = prizes.findIndex(p => p.id === targetPrizeId);
-        const totalSpins = prizes.length * 3 + prizes.length;
-        
-        if (spinCountRef.current < totalSpins - 3) {
-          const delay = 50 + (spinCountRef.current - prizes.length * 3) * 30;
-          animationRef.current = setTimeout(slowSpin, delay);
+        if (spinCountRef.current < fastSpins) {
+          animationRef.current = setTimeout(spin, 50);
+        } else if (spinCountRef.current < totalSpins) {
+          const slowProgress = spinCountRef.current - fastSpins;
+          const delay = 50 + slowProgress * 40;
+          animationRef.current = setTimeout(spin, delay);
         } else {
-          const finalIndex = targetIndex >= 0 ? targetIndex : Math.floor(Math.random() * prizes.length);
-          const stepsToTarget = (finalIndex - (currentIndex % prizes.length) + prizes.length) % prizes.length;
+          const targetIndex = prizes.findIndex(p => p.id === targetPrizeId);
+          const finalPrizeIndex = targetIndex >= 0 ? targetIndex : 0;
+          const currentPrizeIndex = currentIndex % prizes.length;
           
-          if (stepsToTarget === 0) {
-            setSpinState('stopped');
-            onSpinComplete(prizes[finalIndex]);
+          if (currentPrizeIndex === finalPrizeIndex) {
+            setTimeout(() => {
+              setShowWinner(true);
+              onSpinComplete(prizes[finalPrizeIndex]);
+            }, 500);
           } else {
-            const finalStep = () => {
-              setCurrentIndex(prev => prev + 1);
-              spinCountRef.current += 1;
-              
-              const currentPos = currentIndex % prizes.length;
-              if (currentPos === finalIndex) {
-                setSpinState('stopped');
-                onSpinComplete(prizes[finalIndex]);
+            const stepsToTarget = (finalPrizeIndex - currentPrizeIndex + prizes.length) % prizes.length;
+            let steps = 0;
+            
+            const finalAdjust = () => {
+              if (steps < stepsToTarget) {
+                setCurrentIndex(prev => prev + 1);
+                steps++;
+                animationRef.current = setTimeout(finalAdjust, 200);
               } else {
-                animationRef.current = setTimeout(finalStep, 200);
+                setTimeout(() => {
+                  setShowWinner(true);
+                  onSpinComplete(prizes[finalPrizeIndex]);
+                }, 500);
               }
             };
-            animationRef.current = setTimeout(finalStep, 200);
+            
+            finalAdjust();
           }
         }
       };
       
-      fastSpin();
-    } else if (spinState === 'idle') {
+      spin();
+    } else if (!showWinner) {
       const idleAnimation = () => {
         setCurrentIndex(prev => prev + 1);
         animationRef.current = setTimeout(idleAnimation, 1950);
@@ -119,44 +118,12 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete, targetP
         clearTimeout(animationRef.current);
       }
     };
-  }, [isSpinning, spinState]);
+  }, [isSpinning, showWinner, prizes, targetPrizeId, onSpinComplete, currentIndex]);
 
   const renderCards = () => {
     const cards = [];
     const spacing = getCardSpacing();
     const centerOffset = Math.floor(VISIBLE_CARDS / 2);
-    
-    if (spinState === 'stopped') {
-      const centerPrize = prizes.find(p => p.id === targetPrizeId) || prizes[0];
-      return (
-        <div
-          className={`${styles.prizeCard} ${styles.winner}`}
-          style={{ 
-            transform: 'translate(-50%, -50%)',
-            opacity: 1,
-            zIndex: 100
-          }}
-        >
-          <div className={styles.prizeTitle}>
-            {centerPrize.text}
-          </div>
-          {centerPrize.discount && (
-            <DiscountSticker 
-              type={centerPrize.discount.type} 
-              value={centerPrize.discount.value}
-              color={centerPrize.color as any}
-            />
-          )}
-          {centerPrize.image && (
-            <img 
-              src={centerPrize.image} 
-              alt={centerPrize.text}
-              className={styles.prizeImage}
-            />
-          )}
-        </div>
-      );
-    }
     
     for (let i = 0; i < VISIBLE_CARDS; i++) {
       const cardIndex = currentIndex - centerOffset + i;
@@ -167,10 +134,19 @@ export default function PrizeWheel({ prizes, isSpinning, onSpinComplete, targetP
       const isCentered = distance === 0;
       
       let cardClass = styles.prizeCard;
-      if (distance === 0) cardClass += ` ${styles.center}`;
-      else if (distance === 1) cardClass += ` ${styles.near}`;
-      else if (distance === 2) cardClass += ` ${styles.far}`;
-      else cardClass += ` ${styles.hidden}`;
+      if (showWinner && !isCentered) {
+        cardClass += ` ${styles.hidden}`;
+      } else if (showWinner && isCentered) {
+        cardClass += ` ${styles.winner}`;
+      } else if (distance === 0) {
+        cardClass += ` ${styles.center}`;
+      } else if (distance === 1) {
+        cardClass += ` ${styles.near}`;
+      } else if (distance === 2) {
+        cardClass += ` ${styles.far}`;
+      } else {
+        cardClass += ` ${styles.hidden}`;
+      }
       
       cards.push(
         <div
