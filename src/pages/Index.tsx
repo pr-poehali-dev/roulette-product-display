@@ -3,20 +3,20 @@ import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 
 const prizes = [
-  { id: 1, text: '-99%', type: 'discount', color: '#9b87f5' },
-  { id: 2, text: 'Робинзон\nHedgren', type: 'product', color: '#F5A962', emoji: '🎒' },
-  { id: 3, text: '-20%', type: 'discount', color: '#4A90E2' },
-  { id: 4, text: '-150₽', type: 'cashback', color: '#4FEDIC4' },
-  { id: 5, text: '1000₽', type: 'money', color: '#FF8B94' },
-  { id: 6, text: '-25%', type: 'discount', color: '#FF6B6B' },
-  { id: 7, text: 'Инза', type: 'product', color: '#FFE66D', emoji: '🍫' },
-  { id: 8, text: '+500', type: 'coins', color: '#A8E6CF', emoji: '🪙' },
+  { id: 1, text: '-35%', type: 'discount', color: '#4A90E2', description: 'Скидка на первый заказ' },
+  { id: 2, text: '-20%', type: 'discount', color: '#D2691E', description: 'Скидка на категорию' },
+  { id: 3, text: 'Наушники', type: 'product', color: '#F5F5F5', emoji: '🎧', description: 'Наушники Commo за 1₽' },
+  { id: 4, text: 'Semily', type: 'product', color: '#228B22', emoji: '🧴', description: 'Скидка 20% на косметику Semily' },
+  { id: 5, text: 'Pantene', type: 'product', color: '#6A8CC7', emoji: '🧴', description: 'Набор Pantene со скидкой' },
+  { id: 6, text: '-30%', type: 'discount', color: '#5B7FBF', description: 'Скидка на заказ' },
+  { id: 7, text: '-20%', type: 'discount', color: '#8B4513', description: 'Скидка на бакалею' },
+  { id: 8, text: '+500', type: 'coins', color: '#FFD700', emoji: '🪙', description: 'Бонусные монеты' },
 ];
 
 export default function Index() {
   const [coins, setCoins] = useState(100);
   const [isSpinning, setIsSpinning] = useState(false);
-  const [rotation, setRotation] = useState(0);
+  const [offset, setOffset] = useState(0);
   const [wonPrize, setWonPrize] = useState<typeof prizes[0] | null>(null);
 
   const spinWheel = () => {
@@ -28,15 +28,15 @@ export default function Index() {
 
     const randomPrize = prizes[Math.floor(Math.random() * prizes.length)];
     const prizeIndex = prizes.indexOf(randomPrize);
-    const segmentAngle = 360 / prizes.length;
-    const targetRotation = 360 * 5 + (prizeIndex * segmentAngle) + segmentAngle / 2;
+    const prizeWidth = 350;
+    const targetOffset = -(prizeWidth * prizeIndex) - (prizeWidth * prizes.length * 3);
     
-    setRotation(rotation + targetRotation);
+    setOffset(targetOffset);
 
     setTimeout(() => {
       setIsSpinning(false);
       setWonPrize(randomPrize);
-    }, 3000);
+    }, 3500);
   };
 
   return (
@@ -78,73 +78,45 @@ export default function Index() {
           </div>
         </div>
 
-        <div className="relative flex items-center justify-center mb-8">
-          <div className="relative">
-            <div 
-              className="relative w-[500px] h-[500px]"
-              style={{
-                transform: `rotate(${rotation}deg)`,
-                transition: isSpinning ? 'transform 3s cubic-bezier(0.25, 0.1, 0.25, 1)' : 'none'
-              }}
-            >
-              <svg viewBox="0 0 200 200" className="w-full h-full">
-                {prizes.map((prize, index) => {
-                  const segmentAngle = 360 / prizes.length;
-                  const startAngle = (index * segmentAngle - 90) * (Math.PI / 180);
-                  const endAngle = ((index + 1) * segmentAngle - 90) * (Math.PI / 180);
-                  
-                  const x1 = 100 + 100 * Math.cos(startAngle);
-                  const y1 = 100 + 100 * Math.sin(startAngle);
-                  const x2 = 100 + 100 * Math.cos(endAngle);
-                  const y2 = 100 + 100 * Math.sin(endAngle);
-                  
-                  const midAngle = startAngle + (endAngle - startAngle) / 2;
-                  const textX = 100 + 65 * Math.cos(midAngle);
-                  const textY = 100 + 65 * Math.sin(midAngle);
+        <div className="relative mb-8 h-[400px] flex items-center justify-center overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none z-10">
+            <div className="absolute left-1/2 top-0 bottom-0 w-1 bg-white/80 shadow-2xl transform -translate-x-1/2" />
+          </div>
 
-                  return (
-                    <g key={prize.id}>
-                      <path
-                        d={`M 100 100 L ${x1} ${y1} A 100 100 0 0 1 ${x2} ${y2} Z`}
-                        fill={prize.color}
-                        stroke="white"
-                        strokeWidth="3"
-                        className="drop-shadow-xl"
-                      />
-                      <text
-                        x={textX}
-                        y={textY}
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                        fill="white"
-                        fontSize="14"
-                        fontWeight="900"
-                        className="drop-shadow-lg"
-                        transform={`rotate(${index * segmentAngle}, ${textX}, ${textY})`}
-                      >
-                        {prize.emoji ? (
-                          <tspan fontSize="20">{prize.emoji}</tspan>
-                        ) : (
-                          prize.text.split('\n').map((line, i) => (
-                            <tspan key={i} x={textX} dy={i === 0 ? 0 : 16}>
-                              {line}
-                            </tspan>
-                          ))
-                        )}
-                      </text>
-                    </g>
-                  );
-                })}
-              </svg>
-
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white rounded-full shadow-2xl border-4 border-orange-500 flex items-center justify-center">
-                <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full" />
+          <div 
+            className="flex gap-6 items-center"
+            style={{
+              transform: `translateX(calc(50% + ${offset}px))`,
+              transition: isSpinning ? 'transform 3.5s cubic-bezier(0.25, 0.1, 0.25, 1)' : 'none'
+            }}
+          >
+            {[...prizes, ...prizes, ...prizes, ...prizes, ...prizes].map((prize, idx) => (
+              <div
+                key={`${prize.id}-${idx}`}
+                className="flex-shrink-0 w-[320px] h-[280px] rounded-3xl shadow-2xl p-8 flex flex-col items-center justify-center relative overflow-hidden group"
+                style={{ 
+                  backgroundColor: prize.color,
+                  transform: isSpinning ? 'scale(0.95)' : 'scale(1)',
+                  transition: 'transform 0.3s ease'
+                }}
+              >
+                {prize.emoji && (
+                  <div className="text-8xl mb-4 animate-float">
+                    {prize.emoji}
+                  </div>
+                )}
+                <div className="text-white text-5xl font-black mb-3 drop-shadow-lg text-center">
+                  {prize.text}
+                </div>
+                {prize.type === 'discount' && (
+                  <div className="absolute bottom-6 left-6 right-6">
+                    <div className="bg-white/20 backdrop-blur-sm text-white text-sm font-bold px-4 py-2 rounded-xl text-center">
+                      {prize.description}
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
-
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20">
-              <div className="w-0 h-0 border-l-[20px] border-l-transparent border-r-[20px] border-r-transparent border-t-[32px] border-t-white drop-shadow-2xl" />
-            </div>
+            ))}
           </div>
         </div>
 
@@ -154,9 +126,9 @@ export default function Index() {
               <div className="flex items-center gap-4">
                 {wonPrize.emoji && <span className="text-5xl">{wonPrize.emoji}</span>}
                 <div className="flex-1">
-                  <div className="text-sm text-gray-600 font-semibold mb-1">СКИДКА НА ЗАКАЗ В ЛАВКЕ</div>
+                  <div className="text-sm text-gray-600 font-semibold mb-1">{wonPrize.description?.toUpperCase()}</div>
                   <div className="text-3xl font-black" style={{ color: wonPrize.color }}>
-                    {wonPrize.text.replace('\n', ' ')}
+                    {wonPrize.text}
                   </div>
                 </div>
               </div>
