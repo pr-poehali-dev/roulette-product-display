@@ -125,7 +125,7 @@
 
 .prizeTitle {
   position: absolute;
-  bottom: -68px;
+  bottom: -50px;
   left: -25px;
   background: white;
   color: #000;
@@ -134,27 +134,25 @@
   font-weight: 800;
   text-transform: uppercase;
   white-space: nowrap;
-  z-index: 5;
+  z-index: 11;
   clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  animation: titleFadeIn 0.4s ease-out;
+  animation: titleFade 0.3s ease-out;
   line-height: 1.2;
 }
 
-@keyframes titleFadeIn {
+@keyframes titleFade {
   from {
     opacity: 0;
-    transform: translateX(-10px);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
   }
 }
 
 @media (max-width: 768px) {
   .prizeTitle {
-    bottom: -58px;
+    bottom: -40px;
     left: -20px;
     font-size: 11px;
     padding: 6px 16px;
